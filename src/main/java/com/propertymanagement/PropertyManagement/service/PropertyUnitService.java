@@ -23,4 +23,8 @@ public interface PropertyUnitService {
 
     // get property by id
     PropertyUnitResponseDTO getPropertyByPropertyId(int propertyId);
+
+    // ge all occupied units
+
+    List<PropertyUnitResponseDTO> fetchAllOccupiedUnits();
 }

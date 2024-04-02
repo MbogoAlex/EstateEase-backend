@@ -112,6 +112,16 @@ public class PropertyUnitServiceImpl implements PropertyUnitService{
         return mapPropertyToPropertyDto(propertyUnit);
     }
 
+    @Override
+    public List<PropertyUnitResponseDTO> fetchAllOccupiedUnits() {
+        List<PropertyUnitResponseDTO> propertiesDto = new ArrayList<>();
+        List<PropertyUnit> properties = propertyUnitDao.fetchAllOccupiedUnits();
+        for(PropertyUnit propertyUnit : properties) {
+            propertiesDto.add(mapPropertyToPropertyDto(propertyUnit));
+        }
+        return propertiesDto;
+    }
+
     PropertyUnitResponseDTO mapPropertyToPropertyDto(PropertyUnit propertyUnit) {
         PropertyUnitResponseDTO propertyUnitResponseDTO = new PropertyUnitResponseDTO();
         propertyUnitResponseDTO.setPropertyUnitId(propertyUnit.getPropertyUnitId());

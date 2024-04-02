@@ -24,5 +24,6 @@ public interface PropertyUnitDao {
     // fetch property by property number or name
     PropertyUnit fetchPropertyByNumberOrId(String propertyNumOrName);
 
+    // fetch all occupied units
     List<PropertyUnit> fetchAllOccupiedUnits();
 }

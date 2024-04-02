@@ -58,6 +58,11 @@ public class PropertyUnitControllerImpl implements PropertyUnitController {
     public ResponseEntity<Response> getPropertyByPropertyId(@PathVariable("propertyId") int propertyId) {
         return buildResponse("property", propertyUnitService.getPropertyByPropertyId(propertyId), "Fetched successfully", HttpStatus.OK);
     }
+    @GetMapping("/propertyunit/occupied")
+    @Override
+    public ResponseEntity<Response> fetchAllOccupiedUnits() {
+        return  buildResponse("property", propertyUnitService.fetchAllOccupiedUnits(), "Fetched successfully", HttpStatus.OK);
+    }
 
     private ResponseEntity<Response> buildResponse(String desc, Object data, String message, HttpStatus status) {
         return ResponseEntity.status(status)

@@ -25,4 +25,6 @@ public interface PropertyUnitController {
 
     // get property by id
     ResponseEntity<Response> getPropertyByPropertyId(int propertyId);
+
+    ResponseEntity<Response> fetchAllOccupiedUnits();
 }
