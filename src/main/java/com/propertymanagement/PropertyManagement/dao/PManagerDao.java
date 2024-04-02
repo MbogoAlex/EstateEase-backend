@@ -1,10 +1,7 @@
 package com.propertymanagement.PropertyManagement.dao;
 
 import com.propertymanagement.PropertyManagement.dto.PManagerLoginDTO;
-import com.propertymanagement.PropertyManagement.entity.PManager;
-import com.propertymanagement.PropertyManagement.entity.PropertyUnit;
-import com.propertymanagement.PropertyManagement.entity.Role;
-import com.propertymanagement.PropertyManagement.entity.Tenant;
+import com.propertymanagement.PropertyManagement.entity.*;
 
 import java.util.List;
 
@@ -40,4 +37,7 @@ public interface PManagerDao {
 
     // find pmanager by email and password
     PManager findPManagerByPasswordAndEmail(String email, String password);
+
+    // fetch rent payment overview
+    List<RentPayment> getRentPaymentOverview(String month, String year);
 }

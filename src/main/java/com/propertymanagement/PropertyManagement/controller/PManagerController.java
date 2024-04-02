@@ -3,7 +3,9 @@ package com.propertymanagement.PropertyManagement.controller;
 import com.propertymanagement.PropertyManagement.dto.PManagerDTO;
 import com.propertymanagement.PropertyManagement.dto.PManagerLoginDTO;
 import com.propertymanagement.PropertyManagement.dto.Response;
+import com.propertymanagement.PropertyManagement.entity.RentPayment;
 import org.springframework.http.ResponseEntity;
+import java.util.List;
 
 public interface PManagerController {
     // add pManager
@@ -19,4 +21,6 @@ public interface PManagerController {
 
     // login pmanager
     ResponseEntity<Response> pManagerLogin(PManagerLoginDTO pManagerLoginDTO);
+
+    ResponseEntity<Response> getRentPayments(String month, String year);
 }

@@ -3,9 +3,7 @@ package com.propertymanagement.PropertyManagement.service;
 import com.propertymanagement.PropertyManagement.dao.PManagerDao;
 import com.propertymanagement.PropertyManagement.dao.PropertyUnitDao;
 import com.propertymanagement.PropertyManagement.dao.TenantDao;
-import com.propertymanagement.PropertyManagement.dto.RentPaymentDTO;
-import com.propertymanagement.PropertyManagement.dto.TenantDTO;
-import com.propertymanagement.PropertyManagement.dto.TenantLoginDTO;
+import com.propertymanagement.PropertyManagement.dto.*;
 import com.propertymanagement.PropertyManagement.dto.tenantResponse.TenantPropertyDTO;
 import com.propertymanagement.PropertyManagement.dto.tenantResponse.TenantResponseDTO;
 import com.propertymanagement.PropertyManagement.entity.*;
@@ -14,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,9 +36,11 @@ public class TenantServiceImpl implements TenantService{
     @Transactional
     @Override
     public TenantResponseDTO addNewTenant(TenantDTO tenantDTO) {
+        System.out.println("ADDING NEW TENANT: "+tenantDTO.toString());
         Tenant tenant = new Tenant();
         // set tenant name
         tenant.setFullName(tenantDTO.getFullName());
+
 
         // set tenant phone number
         tenant.setPhoneNumber(tenantDTO.getPhoneNumber());
@@ -61,12 +62,26 @@ public class TenantServiceImpl implements TenantService{
         // set tenant active status
         tenant.setTenantActive(true);
 
+        // set property unit
+        PropertyUnit propertyUnit = propertyUnitDao.getPropertyByPropertyId(tenantDTO.getPropertyUnitId());
+        tenant.setPropertyUnit(propertyUnit);
+
         // set rent payment status
         RentPayment rentPayment = new RentPayment();
         rentPayment.setTenant(tenant);
-        rentPayment.setUnitTenantId(tenant.getTenantId());
-        rentPayment.setTransactionId("####");
+        rentPayment.setTransactionId(null);
         rentPayment.setMonth(LocalDateTime.now().getMonth());
+        rentPayment.setDueDate(LocalDate.now());
+        rentPayment.setPenaltyPerDay(tenantDTO.getPenaltyPerDay());
+        rentPayment.setPenaltyActive(true);
+        rentPayment.setMonthlyRent(propertyUnit.getMonthlyRent());
+        rentPayment.setPaymentStatus(false);
+
+
+
+//        rentPayment.setDaysLate(0);
+
+
         rentPayment.setPaidAt(null);
         tenant.getRentPayments().add(rentPayment);
 
@@ -75,11 +90,11 @@ public class TenantServiceImpl implements TenantService{
         tenant.getRoles().add(role);
 
 
-        // set property unit
-        PropertyUnit propertyUnit = propertyUnitDao.getPropertyByPropertyId(tenantDTO.getPropertyUnitId());
-        tenant.setPropertyUnit(propertyUnit);
-//        tenant.setPropertyUnitId(tenantDTO.getPropertyUnitId());
-        // update property unit status
+
+
+
+        rentPayment.setUnitId(propertyUnit.getPropertyUnitId());
+
 
         propertyUnit.setPropertyAssignmentStatus(true);
         propertyUnitDao.updateProperty(propertyUnit);
@@ -89,23 +104,23 @@ public class TenantServiceImpl implements TenantService{
         tenant.setpManager(pManager);
 
 
-        tenantDao.addNewTenant(tenant);
-
-        return mapTenantToTenantResponseDTO(tenant);
+        return mapTenantToTenantResponseDTO(tenantDao.addNewTenant(tenant));
     }
     @Transactional
     @Override
-    public TenantResponseDTO updateTenant(TenantDTO tenantDTO) {
-        Tenant tenant = new Tenant();
+    public TenantResponseDTO updateTenant(TenantUpdateDTO tenantDTO) {
+
+        Tenant tenant = tenantDao.getTenantByTenantId(tenantDTO.getTenantId());
         // set tenant name
         tenant.setFullName(tenantDTO.getFullName());
+
 
         // set tenant phone number
         tenant.setPhoneNumber(tenantDTO.getPhoneNumber());
 
         // set tenant nt.id
 
-        tenant.setNationalIdOrPassportNumber(tenant.getNationalIdOrPassportNumber());
+        tenant.setNationalIdOrPassportNumber(tenantDTO.getNationalIdOrPassportNumber());
 
         // set tenant email
 
@@ -116,6 +131,14 @@ public class TenantServiceImpl implements TenantService{
 
         // set tenant added at
         tenant.setTenantAddedAt(LocalDateTime.now());
+
+        // update monthly rent
+        for(RentPayment payment : tenant.getRentPayments()) {
+            payment.setMonthlyRent(tenant.getPropertyUnit().getMonthlyRent());
+            payment.setUnitId(tenantDTO.getPropertyUnitId());
+            payment.setPenaltyPerDay(tenantDTO.getPenaltyPerDay());
+        }
+
         tenantDao.updateTenant(tenant);
         return mapTenantToTenantResponseDTO(tenant);
     }
@@ -141,44 +164,58 @@ public class TenantServiceImpl implements TenantService{
     @Override
     public RentPayment addNewRentPaymentRow(RentPaymentDTO rentPaymentDTO) {
         RentPayment rentPayment = new RentPayment();
-        Tenant tenant = tenantDao.getTenantByTenantId(rentPaymentDTO.getTenantId());
+        List<Tenant> tenants = tenantDao.getActiveTenants();
 
-        // set tenant
-        rentPayment.setTenant(tenant);
+        for(Tenant tenant : tenants) {
+            // set tenant
+            rentPayment.setTenant(tenant);
+            rentPayment.setUnitId(tenant.getPropertyUnit().getPropertyUnitId());
 
-        // set transactionId
-        rentPayment.setTransactionId("####");
+            // set transactionId
+//        rentPayment.setTransactionId("####");
 
-        // set payable rent
-        rentPayment.setAmountOfRentToBePaid(rentPaymentDTO.getAmountOfRentToBePaid());
+            // set payable rent
+            rentPayment.setMonthlyRent(tenant.getPropertyUnit().getMonthlyRent());
 
-        // set amount of rent paid
-        rentPayment.setAmountOfRentPaid(null);
+            // set penalty
+            rentPayment.setPenaltyActive(rentPaymentDTO.getPenaltyActive());
+            rentPayment.setPenaltyPerDay(rentPaymentDTO.getPenaltyPerDay());
 
-        // set rent payment status
-        rentPayment.setRentPaymentStatus(false);
 
-        // set current month
-        rentPayment.setMonth(LocalDateTime.now().getMonth());
+            // set rent payment status
+            rentPayment.setPaymentStatus(false);
 
-        // set rent paid at
-        rentPayment.setPaidAt(null);
+            // set current month
+            rentPayment.setMonth(LocalDateTime.now().getMonth());
 
-        // save rent payment status
-        tenantDao.addNewRentPaymentRow(rentPayment);
+            // set due date
+            rentPayment.setDueDate(rentPaymentDTO.getDueDate());
+
+            // save rent payment status
+            tenantDao.addNewRentPaymentRow(rentPayment);
+        }
+
+
 
         return null;
     }
     @Transactional
     @Override
-    public RentPayment payRent(RentPaymentDTO rentPaymentDTO, int rentPaymentTblId) {
+    public RentPayment payRent(RentPaymentRequestDTO rentPaymentRequestDTO, int rentPaymentTblId) {
         Random random = new Random();
-//        Tenant tenant = tenantDao.getTenantByTenantId(rentPaymentDTO.getTenantId());
+        Tenant tenant = tenantDao.getTenantByTenantId(rentPaymentRequestDTO.getTenantId());
         RentPayment rentPayment = tenantDao.getRentPaymentRow(rentPaymentTblId);
         rentPayment.setTransactionId(String.valueOf(random.nextInt()));
-        rentPayment.setAmountOfRentPaid(rentPaymentDTO.getAmountOfRentPaid());
-        rentPayment.setRentPaymentStatus(true);
+        rentPayment.setPaidAmount(tenant.getPropertyUnit().getMonthlyRent());
+        rentPayment.setPaymentStatus(true);
         rentPayment.setPaidAt(LocalDateTime.now());
+        if(rentPayment.getDaysLate() > 0) {
+            rentPayment.setPaidLate(true);
+            rentPayment.setDaysLate(rentPayment.getDaysLate());
+        } else {
+            rentPayment.setPaidLate(false);
+            rentPayment.setDaysLate(0);
+        }
 
 
         return tenantDao.payRent(rentPayment);
@@ -222,6 +259,7 @@ public class TenantServiceImpl implements TenantService{
 
     TenantResponseDTO mapTenantToTenantResponseDTO(Tenant tenant) {
         TenantResponseDTO tenantResponseDTO = new TenantResponseDTO();
+        System.out.println("TENANT NAT.ID: "+tenant.getNationalIdOrPassportNumber());
 
 //        tenant.setPropertyUnit(tenant.getPropertyUnit());
         tenantResponseDTO.setTenantId(tenant.getTenantId());

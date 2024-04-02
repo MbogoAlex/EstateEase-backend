@@ -3,19 +3,18 @@ package com.propertymanagement.PropertyManagement.service;
 import com.propertymanagement.PropertyManagement.dao.PManagerDao;
 import com.propertymanagement.PropertyManagement.dto.PManagerDTO;
 import com.propertymanagement.PropertyManagement.dto.PManagerLoginDTO;
+import com.propertymanagement.PropertyManagement.dto.RentPaymentOverviewDTO;
 import com.propertymanagement.PropertyManagement.dto.RoleDTO;
 import com.propertymanagement.PropertyManagement.dto.pManagerResponse.PManagerResponseDTO;
 import com.propertymanagement.PropertyManagement.dto.propertyResponse.PropertyTenantDTO;
 import com.propertymanagement.PropertyManagement.dto.tenantResponse.TenantPropertyDTO;
-import com.propertymanagement.PropertyManagement.entity.PManager;
-import com.propertymanagement.PropertyManagement.entity.PropertyUnit;
-import com.propertymanagement.PropertyManagement.entity.Role;
-import com.propertymanagement.PropertyManagement.entity.Tenant;
+import com.propertymanagement.PropertyManagement.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class PManagerServiceImpl implements PManagerService {
@@ -93,9 +92,40 @@ public class PManagerServiceImpl implements PManagerService {
         return mapPManagerToPManagerResponseDTO(pManager);
     }
 
+    @Override
+    public RentPaymentOverviewDTO getRentPaymentOverview(String month, String year) {
+        Double totalExpectedRent = 0.0;
+        Double paidAmount = 0.0;
+        int clearedUnits = 0;
+
+        List<RentPayment> rentPayments = pManagerDao.getRentPaymentOverview(month, year);
+        int totalUnits = rentPayments.size();
+        for(RentPayment rentPayment : rentPayments) {
+            totalExpectedRent = totalExpectedRent + rentPayment.getMonthlyRent();
+
+            if(rentPayment.getPaymentStatus()) {
+                paidAmount = paidAmount + rentPayment.getPaidAmount();
+                clearedUnits = clearedUnits + 1;
+            }
+        }
+        Double deficit = totalExpectedRent - paidAmount;
+        int unclearedUnits = totalUnits - clearedUnits;
+
+        RentPaymentOverviewDTO rentPaymentOverviewDTO = new RentPaymentOverviewDTO();
+        rentPaymentOverviewDTO.setTotalExpectedRent(totalExpectedRent);
+        rentPaymentOverviewDTO.setTotalUnits(totalUnits);
+        rentPaymentOverviewDTO.setPaidAmount(paidAmount);
+        rentPaymentOverviewDTO.setClearedUnits(clearedUnits);
+        rentPaymentOverviewDTO.setDeficit(deficit);
+        rentPaymentOverviewDTO.setUnclearedUnits(unclearedUnits);
+
+        return rentPaymentOverviewDTO;
+    }
+
     PManagerResponseDTO mapPManagerToPManagerResponseDTO(PManager pManager) {
         PManagerResponseDTO pManagerResponseDTO = new PManagerResponseDTO();
         pManagerResponseDTO.setPManagerId(pManager.getpManagerId());
+        pManagerResponseDTO.setNationalIdOrPassportNumber(pManager.getNationalIdOrPassportNumber());
         pManagerResponseDTO.setFullName(pManager.getFullName());
         pManagerResponseDTO.setPhoneNumber(pManager.getPhoneNumber());
         pManagerResponseDTO.setEmail(pManager.getEmail());

@@ -65,6 +65,11 @@ public class PManagerControllerImpl implements PManagerController {
     public ResponseEntity<Response> pManagerLogin(@RequestBody PManagerLoginDTO pManagerLoginDTO) {
         return buildResponse("pmanager", pManagerService.pManagerLogin(pManagerLoginDTO), "Login successful", HttpStatus.OK);
     }
+    @GetMapping("/rentpayment/overview/month={month}/year={year}")
+    @Override
+    public ResponseEntity<Response> getRentPayments(@PathVariable("month") String month, @PathVariable("year") String year) {
+        return buildResponse("rentpayment", pManagerService.getRentPaymentOverview(month, year), "Fetched successfully", HttpStatus.OK);
+    }
 
     private ResponseEntity<Response> buildResponse(String desc, Object data, String message, HttpStatus status) {
         return ResponseEntity.status(status)

@@ -32,4 +32,6 @@ public interface TenantDao {
 
     // fetch tenant by password
     Tenant fetchTenantByPasswordAndPhoneNumber(String password, String phoneNumber);
+
+    List<Tenant> getActiveTenants();
 }

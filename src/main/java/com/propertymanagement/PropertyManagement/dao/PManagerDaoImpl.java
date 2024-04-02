@@ -1,9 +1,6 @@
 package com.propertymanagement.PropertyManagement.dao;
 
-import com.propertymanagement.PropertyManagement.entity.PManager;
-import com.propertymanagement.PropertyManagement.entity.PropertyUnit;
-import com.propertymanagement.PropertyManagement.entity.Role;
-import com.propertymanagement.PropertyManagement.entity.Tenant;
+import com.propertymanagement.PropertyManagement.entity.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
@@ -67,8 +64,8 @@ public class PManagerDaoImpl implements PManagerDao {
     public PManager getPManagerById(int id) {
         TypedQuery<PManager> query = entityManager.createQuery("from PManager where pManagerId = :data", PManager.class);
         query.setParameter("data", id);
-        System.out.println("PMANAGER RETRIEVED:");
-        System.out.println(query.getResultList().toString());
+        System.out.println("PMANAGER OF ID: "+id+ " RETRIEVED:");
+//        System.out.println(query.getResultList().toString());
         return query.getSingleResult();
 
     }
@@ -118,6 +115,14 @@ public class PManagerDaoImpl implements PManagerDao {
         query.setParameter("email", email);
         query.setParameter("password", password);
         return query.getSingleResult();
+    }
+
+    @Override
+    public List<RentPayment> getRentPaymentOverview(String month, String year) {
+        TypedQuery<RentPayment> query = entityManager.createQuery("from RentPayment where MONTHNAME(dueDate) = :month AND YEAR(dueDate) = :year", RentPayment.class);
+        query.setParameter("month", month);
+        query.setParameter("year", year);
+        return query.getResultList();
     }
 
 

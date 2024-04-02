@@ -1,8 +1,6 @@
 package com.propertymanagement.PropertyManagement.service;
 
-import com.propertymanagement.PropertyManagement.dto.RentPaymentDTO;
-import com.propertymanagement.PropertyManagement.dto.TenantDTO;
-import com.propertymanagement.PropertyManagement.dto.TenantLoginDTO;
+import com.propertymanagement.PropertyManagement.dto.*;
 import com.propertymanagement.PropertyManagement.dto.tenantResponse.TenantResponseDTO;
 import com.propertymanagement.PropertyManagement.entity.RentPayment;
 import com.propertymanagement.PropertyManagement.entity.Tenant;
@@ -13,7 +11,7 @@ public interface TenantService {
     TenantResponseDTO addNewTenant(TenantDTO tenantDTO);
 
     // update tenant
-    TenantResponseDTO updateTenant(TenantDTO tenantDTO);
+    TenantResponseDTO updateTenant(TenantUpdateDTO tenantUpdateDTO);
 
     // get all tenants
     List<TenantResponseDTO> getAllTenants();
@@ -27,7 +25,7 @@ public interface TenantService {
 
     // update rent payment
 
-    RentPayment payRent(RentPaymentDTO rentPaymentDTO, int rentPaymentTblId);
+    RentPayment payRent(RentPaymentRequestDTO rentPaymentRequestDTO, int rentPaymentTblId);
 
     // archive tenant
     TenantResponseDTO archiveTenant(int tenantId, int propertyId);

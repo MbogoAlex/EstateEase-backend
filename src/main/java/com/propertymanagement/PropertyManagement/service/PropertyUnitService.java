@@ -1,7 +1,9 @@
 package com.propertymanagement.PropertyManagement.service;
 
 import com.propertymanagement.PropertyManagement.dto.PropertyUnitDTO;
+import com.propertymanagement.PropertyManagement.dto.RentPaymentOverviewDTO;
 import com.propertymanagement.PropertyManagement.dto.propertyResponse.PropertyUnitResponseDTO;
+import com.propertymanagement.PropertyManagement.entity.RentPayment;
 
 import java.util.List;
 
@@ -27,4 +29,6 @@ public interface PropertyUnitService {
     // ge all occupied units
 
     List<PropertyUnitResponseDTO> fetchAllOccupiedUnits();
+
+
 }

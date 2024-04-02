@@ -1,6 +1,8 @@
 package com.propertymanagement.PropertyManagement.dao;
 
 import com.propertymanagement.PropertyManagement.entity.PropertyUnit;
+import com.propertymanagement.PropertyManagement.entity.RentPayment;
+
 import java.util.List;
 public interface PropertyUnitDao {
     // add property
@@ -26,4 +28,6 @@ public interface PropertyUnitDao {
 
     // fetch all occupied units
     List<PropertyUnit> fetchAllOccupiedUnits();
+
+
 }

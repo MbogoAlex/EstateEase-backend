@@ -62,7 +62,7 @@ public class TenantDaoImpl implements TenantDao{
 
     @Override
     public RentPayment getRentPaymentRow(int rentPaymentTblId) {
-        TypedQuery<RentPayment> query = entityManager.createQuery("find from RentPayment where rentPaymentTblId = :data", RentPayment.class);
+        TypedQuery<RentPayment> query = entityManager.createQuery("from RentPayment where rentPaymentTblId = :data", RentPayment.class);
         query.setParameter("data", rentPaymentTblId);
         return query.getSingleResult();
     }
@@ -73,5 +73,11 @@ public class TenantDaoImpl implements TenantDao{
         query.setParameter("password", password);
         query.setParameter("phoneNumber", phoneNumber);
         return query.getSingleResult();
+    }
+
+    @Override
+    public List<Tenant> getActiveTenants() {
+        TypedQuery<Tenant> query = entityManager.createQuery("from Tenant where tenantActive = true", Tenant.class);
+        return query.getResultList();
     }
 }

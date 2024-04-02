@@ -4,10 +4,12 @@ import com.propertymanagement.PropertyManagement.dao.PManagerDao;
 import com.propertymanagement.PropertyManagement.dao.PropertyUnitDao;
 import com.propertymanagement.PropertyManagement.dao.TenantDao;
 import com.propertymanagement.PropertyManagement.dto.PropertyUnitDTO;
+import com.propertymanagement.PropertyManagement.dto.RentPaymentOverviewDTO;
 import com.propertymanagement.PropertyManagement.dto.propertyResponse.PropertyTenantDTO;
 import com.propertymanagement.PropertyManagement.dto.propertyResponse.PropertyUnitResponseDTO;
 import com.propertymanagement.PropertyManagement.entity.PManager;
 import com.propertymanagement.PropertyManagement.entity.PropertyUnit;
+import com.propertymanagement.PropertyManagement.entity.RentPayment;
 import com.propertymanagement.PropertyManagement.entity.Tenant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,6 +37,7 @@ public class PropertyUnitServiceImpl implements PropertyUnitService{
     @Transactional
     @Override
     public PropertyUnitResponseDTO addNewProperty(PropertyUnitDTO propertyUnitDTO) {
+        System.out.println("ADDING PROPERTY, PMANAGER ID:" +propertyUnitDTO.getPropertyManagerId());
         PropertyUnit propertyUnit = new PropertyUnit();
         // set no. of rooms
         propertyUnit.setNumberOfRooms(propertyUnitDTO.getNumberOfRooms());
@@ -59,7 +62,7 @@ public class PropertyUnitServiceImpl implements PropertyUnitService{
 
         // set pmanager
         PManager pManager = pmAppDao.getPManagerById(propertyUnitDTO.getPropertyManagerId());
-        propertyUnit.setpManager(pManager);
+        propertyUnit.setPManager(pManager);
 
 
         return mapPropertyToPropertyDto(pmAppDao.addNewUnit(propertyUnit));
@@ -117,10 +120,17 @@ public class PropertyUnitServiceImpl implements PropertyUnitService{
         List<PropertyUnitResponseDTO> propertiesDto = new ArrayList<>();
         List<PropertyUnit> properties = propertyUnitDao.fetchAllOccupiedUnits();
         for(PropertyUnit propertyUnit : properties) {
-            propertiesDto.add(mapPropertyToPropertyDto(propertyUnit));
+            for(Tenant tenant : propertyUnit.getTenants()) {
+                if(tenant.getTenantActive()) {
+                    propertiesDto.add(mapPropertyToPropertyDto(propertyUnit));
+                }
+            }
+
         }
         return propertiesDto;
     }
+
+
 
     PropertyUnitResponseDTO mapPropertyToPropertyDto(PropertyUnit propertyUnit) {
         PropertyUnitResponseDTO propertyUnitResponseDTO = new PropertyUnitResponseDTO();

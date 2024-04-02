@@ -34,7 +34,7 @@ public class PropertyUnitServices {
         // set the property manager that has added the property
 
         PManager pManager = appDao.getPManagerById(propertyManagerId);
-        propertyUnit.setpManager(pManager);
+        propertyUnit.setPManager(pManager);
 
         // add null tenants
 //        propertyUnit.setTenants(null);

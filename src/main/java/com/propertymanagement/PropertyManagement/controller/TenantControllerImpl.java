@@ -1,9 +1,6 @@
 package com.propertymanagement.PropertyManagement.controller;
 
-import com.propertymanagement.PropertyManagement.dto.RentPaymentDTO;
-import com.propertymanagement.PropertyManagement.dto.Response;
-import com.propertymanagement.PropertyManagement.dto.TenantDTO;
-import com.propertymanagement.PropertyManagement.dto.TenantLoginDTO;
+import com.propertymanagement.PropertyManagement.dto.*;
 import com.propertymanagement.PropertyManagement.entity.Tenant;
 import com.propertymanagement.PropertyManagement.service.TenantService;
 import org.springframework.http.HttpStatus;
@@ -30,7 +27,7 @@ public class TenantControllerImpl implements TenantController{
 
     @Override
     @PutMapping("/tenant")
-    public ResponseEntity<Response> updateTenant(TenantDTO tenantDTO) {
+    public ResponseEntity<Response> updateTenant(@RequestBody TenantUpdateDTO tenantDTO) {
         return buildResponse("tenant", tenantService.updateTenant(tenantDTO), "Updated successfully", HttpStatus.OK);
     }
 
@@ -49,17 +46,18 @@ public class TenantControllerImpl implements TenantController{
     @Override
     @PostMapping("/rentpayment/newrow")
     public ResponseEntity<Response> addNewRentPaymentRow(@RequestBody RentPaymentDTO rentPaymentDTO) {
-        return buildResponse("rentPayment", tenantService.addNewRentPaymentRow(rentPaymentDTO), "Created successfully", HttpStatus.OK);
+        return buildResponse("rentPayment", tenantService.addNewRentPaymentRow(rentPaymentDTO ), "Created successfully", HttpStatus.OK);
     }
+
 
     @Override
     @PostMapping("/rentpayment/rentPaymentTblId={id}")
-    public ResponseEntity<Response> payRent(@RequestBody RentPaymentDTO rentPaymentDTO, @PathVariable("id") int rentPaymentTblId) {
-        return buildResponse("rentPayment", tenantService.payRent(rentPaymentDTO, rentPaymentTblId), "Paid successfully", HttpStatus.OK);
+    public ResponseEntity<Response> payRent(@RequestBody RentPaymentRequestDTO rentPaymentRequestDTO, @PathVariable("id") int rentPaymentTblId) {
+        return buildResponse("rentPayment", tenantService.payRent(rentPaymentRequestDTO, rentPaymentTblId), "Paid successfully", HttpStatus.OK);
     }
 
     @Override
-    @PutMapping("tenant/archive/tenantId={tenantId}/propertyId={propertyId}")
+    @PutMapping("/tenant/archive/tenantId={tenantId}/propertyId={propertyId}")
     public ResponseEntity<Response> archiveTenant(@PathVariable("tenantId") int tenantId, @PathVariable("propertyId") int propertyId) {
         return buildResponse("tenant", tenantService.archiveTenant(tenantId, propertyId), "Archived successfully", HttpStatus.OK);
     }

@@ -1,15 +1,14 @@
 package com.propertymanagement.PropertyManagement.dto;
 
-import com.propertymanagement.PropertyManagement.entity.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TenantDTO {
+public class TenantUpdateDTO {
+    private int tenantId;
     private String fullName;
     private String nationalIdOrPassportNumber;
     private String phoneNumber;
@@ -20,9 +19,6 @@ public class TenantDTO {
     private int roleId;
 
     private int propertyUnitId;
-    private int tenantAddedByPManagerId;
 
     private Double penaltyPerDay;
-
 }
-

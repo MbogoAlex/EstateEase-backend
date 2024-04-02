@@ -1,9 +1,6 @@
 package com.propertymanagement.PropertyManagement.controller;
 
-import com.propertymanagement.PropertyManagement.dto.RentPaymentDTO;
-import com.propertymanagement.PropertyManagement.dto.Response;
-import com.propertymanagement.PropertyManagement.dto.TenantDTO;
-import com.propertymanagement.PropertyManagement.dto.TenantLoginDTO;
+import com.propertymanagement.PropertyManagement.dto.*;
 import com.propertymanagement.PropertyManagement.entity.RentPayment;
 import com.propertymanagement.PropertyManagement.entity.Tenant;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +12,7 @@ public interface TenantController {
     ResponseEntity<Response> addNewTenant(TenantDTO tenantDTO);
 
     // update tenant
-    ResponseEntity<Response> updateTenant(TenantDTO tenantDTO);
+    ResponseEntity<Response> updateTenant(TenantUpdateDTO tenantDTO);
 
     // get all tenants
 
@@ -30,7 +27,7 @@ public interface TenantController {
 
     // update rent payment
 
-    ResponseEntity<Response> payRent(RentPaymentDTO rentPaymentDTO, int rentPaymentTblId);
+    ResponseEntity<Response> payRent(RentPaymentRequestDTO rentPaymentRequestDTO, int rentPaymentTblId);
 
     // archive tenant
     ResponseEntity<Response> archiveTenant(int tenantId, int propertyId);

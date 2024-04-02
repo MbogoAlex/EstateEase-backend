@@ -2,11 +2,16 @@ package com.propertymanagement.PropertyManagement.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "property_unit")
 public class PropertyUnit {
@@ -22,6 +27,8 @@ public class PropertyUnit {
     private String propertyDescription;
     @Column(name = "monthly_rent")
     private Double monthlyRent;
+    @Column(name = "late_payment_daily_penalty")
+    private Double latePaymentDailyPenalty;
     @Column(name = "property_added_at")
     private LocalDateTime propertyAddedAt;
     @Column(name = "property_assignment_status")
@@ -37,101 +44,4 @@ public class PropertyUnit {
     @JoinColumn(name = "pmanager_id")
     private PManager pManager;
 
-
-    public PropertyUnit() {}
-
-    public PropertyUnit(int numberOfRooms, String propertyNumberOrName, String propertyDescription, Double monthlyRent) {
-        this.numberOfRooms = numberOfRooms;
-        this.propertyNumberOrName = propertyNumberOrName;
-        this.propertyDescription = propertyDescription;
-        this.monthlyRent = monthlyRent;
-    }
-
-    public int getPropertyUnitId() {
-        return propertyUnitId;
-    }
-
-    public void setPropertyUnitId(int propertyUnitId) {
-        this.propertyUnitId = propertyUnitId;
-    }
-
-    public int getNumberOfRooms() {
-        return numberOfRooms;
-    }
-
-    public void setNumberOfRooms(int numberOfRooms) {
-        this.numberOfRooms = numberOfRooms;
-    }
-
-    public String getPropertyNumberOrName() {
-        return propertyNumberOrName;
-    }
-
-    public void setPropertyNumberOrName(String propertyNumberOrName) {
-        this.propertyNumberOrName = propertyNumberOrName;
-    }
-
-    public String getPropertyDescription() {
-        return propertyDescription;
-    }
-
-    public void setPropertyDescription(String propertyDescription) {
-        this.propertyDescription = propertyDescription;
-    }
-
-    public Double getMonthlyRent() {
-        return monthlyRent;
-    }
-
-    public void setMonthlyRent(Double monthlyRent) {
-        this.monthlyRent = monthlyRent;
-    }
-
-    public LocalDateTime getPropertyAddedAt() {
-        return propertyAddedAt;
-    }
-
-    public void setPropertyAddedAt(LocalDateTime propertyAddedAt) {
-        this.propertyAddedAt = propertyAddedAt;
-    }
-
-
-
-    public Boolean getPropertyAssignmentStatus() {
-        return propertyAssignmentStatus;
-    }
-
-    public void setPropertyAssignmentStatus(Boolean propertyAssignmentStatus) {
-        this.propertyAssignmentStatus = propertyAssignmentStatus;
-    }
-
-    public List<Tenant> getTenants() {
-        return tenants;
-    }
-
-    public void setTenants(List<Tenant> tenants) {
-        this.tenants = tenants;
-    }
-
-
-    public PManager getpManager() {
-        return pManager;
-    }
-
-    public void setpManager(PManager pManager) {
-        this.pManager = pManager;
-    }
-
-    @Override
-    public String toString() {
-        return "PropertyUnit{" +
-                "propertyUnitId=" + propertyUnitId +
-                ", numberOfRooms=" + numberOfRooms +
-                ", propertyNumberOrName='" + propertyNumberOrName + '\'' +
-                ", propertyDescription='" + propertyDescription + '\'' +
-                ", monthlyRent=" + monthlyRent +
-                ", propertyAddedAt=" + propertyAddedAt +
-                ", propertyAssignmentStatus=" + propertyAssignmentStatus +
-                '}';
-    }
 }
