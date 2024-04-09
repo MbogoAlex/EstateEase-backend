@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TenantPropertyDTO {
     private int propertyUnitId;
+    private int numberOfRooms;
     private String propertyNumberOrName;
     private String propertyDescription;
     private Double monthlyRent;

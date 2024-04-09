@@ -28,7 +28,9 @@ public interface PropertyUnitService {
 
     // ge all occupied units
 
-    List<PropertyUnitResponseDTO> fetchAllOccupiedUnits();
+    List<PropertyUnitResponseDTO> fetchAllOccupiedUnits(String tenantName, Integer rooms, String roomName);
+
+    List<PropertyUnitResponseDTO> fetchAllUnoccupiedUnits(int rooms, String roomName);
 
 
 }

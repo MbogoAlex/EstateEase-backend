@@ -2,16 +2,13 @@ package com.propertymanagement.PropertyManagement.controller;
 
 import com.propertymanagement.PropertyManagement.dto.PropertyUnitDTO;
 import com.propertymanagement.PropertyManagement.dto.Response;
-import com.propertymanagement.PropertyManagement.entity.PropertyUnit;
 import com.propertymanagement.PropertyManagement.service.PropertyUnitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import static java.util.Map.of;
 
@@ -60,8 +57,20 @@ public class PropertyUnitControllerImpl implements PropertyUnitController {
     }
     @GetMapping("/propertyunit/occupied")
     @Override
-    public ResponseEntity<Response> fetchAllOccupiedUnits() {
-        return  buildResponse("property", propertyUnitService.fetchAllOccupiedUnits(), "Fetched successfully", HttpStatus.OK);
+    public ResponseEntity<Response> fetchAllOccupiedUnits(
+            @RequestParam(value = "tenantName", required = false) String tenantName,
+            @RequestParam(value = "rooms", required = false) Integer rooms,
+            @RequestParam(value = "roomName", required = false) String roomName
+    ) {
+        return  buildResponse("property", propertyUnitService.fetchAllOccupiedUnits(tenantName, rooms, roomName), "Fetched successfully", HttpStatus.OK);
+    }
+    @GetMapping("/propertyunit/unoccupied")
+    @Override
+    public ResponseEntity<Response> fetchAllUnoccupiedUnits(
+            @RequestParam(value = "rooms", required = false) Integer rooms,
+            @RequestParam(value = "roomName", required = false) String roomName
+    ) {
+        return buildResponse("property", propertyUnitService.fetchAllUnoccupiedUnits(rooms, roomName), "Fetched successfully", HttpStatus.OK);
     }
 
     private ResponseEntity<Response> buildResponse(String desc, Object data, String message, HttpStatus status) {

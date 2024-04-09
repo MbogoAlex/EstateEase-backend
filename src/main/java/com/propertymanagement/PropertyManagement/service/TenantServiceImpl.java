@@ -275,6 +275,7 @@ public class TenantServiceImpl implements TenantService{
 
         TenantPropertyDTO tenantPropertyDTO = new TenantPropertyDTO();
         tenantPropertyDTO.setPropertyUnitId(tenant.getPropertyUnit().getPropertyUnitId());
+        tenantPropertyDTO.setNumberOfRooms(tenant.getPropertyUnit().getNumberOfRooms());
         tenantPropertyDTO.setPropertyNumberOrName(tenant.getPropertyUnit().getPropertyNumberOrName());
         tenantPropertyDTO.setPropertyDescription(tenant.getPropertyUnit().getPropertyDescription());
         tenantPropertyDTO.setMonthlyRent(tenant.getPropertyUnit().getMonthlyRent());

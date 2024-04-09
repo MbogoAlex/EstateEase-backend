@@ -29,5 +29,11 @@ public interface PropertyUnitDao {
     // fetch all occupied units
     List<PropertyUnit> fetchAllOccupiedUnits();
 
+    List<PropertyUnit> fetchAllUnoccupiedUnits();
+
+    List<PropertyUnit> fetchUnitsFilteredByNameAndNumOfRooms(String name, Integer rooms, Boolean assignmentStatus);
+
+    List<PropertyUnit> fetchUnitsFilteredByRoomName(String name, Boolean assignmentStatus);
+    List<PropertyUnit> fetchUnitsFilteredByRooms(int rooms, Boolean assignmentStatus);
 
 }

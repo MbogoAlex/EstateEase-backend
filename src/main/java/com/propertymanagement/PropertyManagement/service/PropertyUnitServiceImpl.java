@@ -116,13 +116,27 @@ public class PropertyUnitServiceImpl implements PropertyUnitService{
     }
 
     @Override
-    public List<PropertyUnitResponseDTO> fetchAllOccupiedUnits() {
+    public List<PropertyUnitResponseDTO> fetchAllOccupiedUnits(String tenantName, Integer rooms, String roomName) {
         List<PropertyUnitResponseDTO> propertiesDto = new ArrayList<>();
-        List<PropertyUnit> properties = propertyUnitDao.fetchAllOccupiedUnits();
+        List<PropertyUnit> properties = propertyUnitDao.fetchUnitsFilteredByNameAndNumOfRooms(
+                roomName,
+                rooms,
+                true
+        );
+
         for(PropertyUnit propertyUnit : properties) {
+
             for(Tenant tenant : propertyUnit.getTenants()) {
                 if(tenant.getTenantActive()) {
-                    propertiesDto.add(mapPropertyToPropertyDto(propertyUnit));
+                    if(tenantName != null) {
+                        tenantName = tenantName.toLowerCase();
+                        if(tenant.getFullName().toLowerCase().contains(tenantName) || tenant.getFullName().toLowerCase().equals(tenantName)) {
+                            propertiesDto.add(mapPropertyToPropertyDto(propertyUnit));
+                        }
+                    } else {
+                        propertiesDto.add(mapPropertyToPropertyDto(propertyUnit));
+                    }
+
                 }
             }
 
@@ -130,6 +144,21 @@ public class PropertyUnitServiceImpl implements PropertyUnitService{
         return propertiesDto;
     }
 
+    @Override
+    public List<PropertyUnitResponseDTO> fetchAllUnoccupiedUnits(int rooms, String roomName) {
+        List<PropertyUnitResponseDTO> propertiesDto = new ArrayList<>();
+        List<PropertyUnit> properties = propertyUnitDao.fetchAllUnoccupiedUnits();
+
+
+        for(PropertyUnit propertyUnit : properties) {
+
+//            propertyUnit.setTenants(new ArrayList<>());
+            propertiesDto.add(mapPropertyToPropertyDto(propertyUnit));
+
+
+        }
+        return propertiesDto;
+    }
 
 
     PropertyUnitResponseDTO mapPropertyToPropertyDto(PropertyUnit propertyUnit) {

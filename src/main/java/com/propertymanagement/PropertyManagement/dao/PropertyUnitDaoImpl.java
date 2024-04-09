@@ -65,4 +65,40 @@ public class PropertyUnitDaoImpl implements PropertyUnitDao{
         TypedQuery<PropertyUnit> query = entityManager.createQuery("from PropertyUnit where propertyAssignmentStatus = true", PropertyUnit.class);
         return query.getResultList();
     }
+
+    @Override
+    public List<PropertyUnit> fetchAllUnoccupiedUnits() {
+        TypedQuery<PropertyUnit> query = entityManager.createQuery("from PropertyUnit where propertyAssignmentStatus = false", PropertyUnit.class);
+        return query.getResultList();
+    }
+
+    @Override
+    public List<PropertyUnit> fetchUnitsFilteredByNameAndNumOfRooms(String name, Integer rooms, Boolean assignmentStatus) {
+        System.out.println("FILTERING");
+        String queryString = "from PropertyUnit where (:propertyNumberOrName is null or propertyNumberOrName = :propertyNumberOrName or propertyNumberOrName like concat('%', :propertyNumberOrName, '%')) and (:numberOfRooms is null or numberOfRooms = :numberOfRooms) and (:propertyAssignmentStatus = :propertyAssignmentStatus)";
+        TypedQuery<PropertyUnit> query = entityManager.createQuery(queryString, PropertyUnit.class);
+        query.setParameter("propertyNumberOrName", name);
+        query.setParameter("numberOfRooms", rooms);
+        query.setParameter("propertyAssignmentStatus", assignmentStatus);
+
+        return query.getResultList();
+    }
+
+
+
+    @Override
+    public List<PropertyUnit> fetchUnitsFilteredByRoomName(String name, Boolean assignmentStatus) {
+        TypedQuery<PropertyUnit> query = entityManager.createQuery("from PropertyUnit where propertyNumberOrName = :propertyNumberOrName and propertyAssignmentStatus =:propertyAssignmentStatus", PropertyUnit.class);
+        query.setParameter("propertyNumberOrName", name);
+        query.setParameter("propertyAssignmentStatus", assignmentStatus);
+        return query.getResultList();
+    }
+
+    @Override
+    public List<PropertyUnit> fetchUnitsFilteredByRooms(int rooms, Boolean assignmentStatus) {
+        TypedQuery<PropertyUnit> query = entityManager.createQuery("from PropertyUnit where numberOfRooms = :numberOfRooms and propertyAssignmentStatus = :propertyAssignmentStatus", PropertyUnit.class);
+        query.setParameter("numberOfRooms", rooms);
+        query.setParameter("propertyAssignmentStatus", assignmentStatus);
+        return query.getResultList();
+    }
 }
