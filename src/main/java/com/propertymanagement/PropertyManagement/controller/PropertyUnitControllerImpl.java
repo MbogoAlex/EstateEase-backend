@@ -55,14 +55,15 @@ public class PropertyUnitControllerImpl implements PropertyUnitController {
     public ResponseEntity<Response> getPropertyByPropertyId(@PathVariable("propertyId") int propertyId) {
         return buildResponse("property", propertyUnitService.getPropertyByPropertyId(propertyId), "Fetched successfully", HttpStatus.OK);
     }
-    @GetMapping("/propertyunit/occupied")
+    @GetMapping("/propertyunit/filter")
     @Override
-    public ResponseEntity<Response> fetchAllOccupiedUnits(
+    public ResponseEntity<Response> fetchFilteredUnits(
             @RequestParam(value = "tenantName", required = false) String tenantName,
             @RequestParam(value = "rooms", required = false) Integer rooms,
-            @RequestParam(value = "roomName", required = false) String roomName
+            @RequestParam(value = "roomName", required = false) String roomName,
+            @RequestParam(value = "occupied") Boolean occupied
     ) {
-        return  buildResponse("property", propertyUnitService.fetchAllOccupiedUnits(tenantName, rooms, roomName), "Fetched successfully", HttpStatus.OK);
+        return  buildResponse("property", propertyUnitService.fetchFilteredUnits(tenantName, rooms, roomName, occupied), "Fetched successfully", HttpStatus.OK);
     }
     @GetMapping("/propertyunit/unoccupied")
     @Override

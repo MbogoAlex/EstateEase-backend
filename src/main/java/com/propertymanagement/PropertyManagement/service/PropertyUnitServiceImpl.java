@@ -77,12 +77,22 @@ public class PropertyUnitServiceImpl implements PropertyUnitService{
     }
     @Transactional
     @Override
-    public PropertyUnitResponseDTO archiveProperty(int propertyId, int tenantId) {
+    public PropertyUnit archiveProperty(int propertyId, int tenantId) {
+        System.out.println("PROPERTYID: "+ propertyId + "TENANTID "+tenantId);
         PropertyUnit propertyUnit = propertyUnitDao.getPropertyByPropertyId(propertyId);
+        PropertyUnit copy = propertyUnit;
+        System.out.println(propertyUnit.getPropertyUnitId());
+        System.out.println(propertyUnit.getPropertyDescription());
         Tenant tenant = tenantDao.getTenantByTenantId(tenantId);
+
+        System.out.println("ARCHIVING PROPERTY");
 
         // archive property
         propertyUnit.setPropertyAssignmentStatus(false);
+
+        System.out.println("PROPERTY ARCHIVED");
+
+        System.out.println("ARCHIVING TENANT");
 
         // archive tenant
         tenant.setTenantActive(false);
@@ -90,7 +100,10 @@ public class PropertyUnitServiceImpl implements PropertyUnitService{
         // save updated tenant
         tenantDao.updateTenant(tenant);
 
-        return mapPropertyToPropertyDto(propertyUnitDao.updateProperty(propertyUnit));
+        System.out.println("TENANT ARCHIVED");
+
+
+        return propertyUnitDao.updateProperty(propertyUnit);
     }
     @Transactional
     @Override
@@ -116,28 +129,34 @@ public class PropertyUnitServiceImpl implements PropertyUnitService{
     }
 
     @Override
-    public List<PropertyUnitResponseDTO> fetchAllOccupiedUnits(String tenantName, Integer rooms, String roomName) {
+    public List<PropertyUnitResponseDTO> fetchFilteredUnits(String tenantName, Integer rooms, String roomName, Boolean occupied) {
         List<PropertyUnitResponseDTO> propertiesDto = new ArrayList<>();
-        List<PropertyUnit> properties = propertyUnitDao.fetchUnitsFilteredByNameAndNumOfRooms(
+        List<PropertyUnit> properties = propertyUnitDao.fetchFilteredUnits(
                 roomName,
                 rooms,
-                true
+                occupied
         );
 
         for(PropertyUnit propertyUnit : properties) {
 
-            for(Tenant tenant : propertyUnit.getTenants()) {
-                if(tenant.getTenantActive()) {
-                    if(tenantName != null) {
-                        tenantName = tenantName.toLowerCase();
-                        if(tenant.getFullName().toLowerCase().contains(tenantName) || tenant.getFullName().toLowerCase().equals(tenantName)) {
+            if(!propertyUnit.getTenants().isEmpty()) {
+                for(Tenant tenant : propertyUnit.getTenants()) {
+                    if(tenant.getTenantActive()) {
+                        if(tenantName != null) {
+                            tenantName = tenantName.toLowerCase();
+                            if(tenant.getFullName().toLowerCase().contains(tenantName) || tenant.getFullName().toLowerCase().equals(tenantName)) {
+                                propertiesDto.add(mapPropertyToPropertyDto(propertyUnit));
+                            }
+                        } else {
                             propertiesDto.add(mapPropertyToPropertyDto(propertyUnit));
                         }
+
                     } else {
                         propertiesDto.add(mapPropertyToPropertyDto(propertyUnit));
                     }
-
                 }
+            } else {
+                propertiesDto.add(mapPropertyToPropertyDto(propertyUnit));
             }
 
         }

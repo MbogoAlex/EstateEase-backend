@@ -42,6 +42,7 @@ public class PropertyUnitDaoImpl implements PropertyUnitDao{
 
     @Override
     public PropertyUnit getPropertyByPropertyId(int propertyId) {
+        System.out.println("FIND NY PROPERTY ID: "+propertyId);
         TypedQuery<PropertyUnit> query = entityManager.createQuery("from PropertyUnit where propertyUnitId = :data", PropertyUnit.class);
         query.setParameter("data", propertyId);
         return query.getSingleResult();
@@ -73,9 +74,8 @@ public class PropertyUnitDaoImpl implements PropertyUnitDao{
     }
 
     @Override
-    public List<PropertyUnit> fetchUnitsFilteredByNameAndNumOfRooms(String name, Integer rooms, Boolean assignmentStatus) {
-        System.out.println("FILTERING");
-        String queryString = "from PropertyUnit where (:propertyNumberOrName is null or propertyNumberOrName = :propertyNumberOrName or propertyNumberOrName like concat('%', :propertyNumberOrName, '%')) and (:numberOfRooms is null or numberOfRooms = :numberOfRooms) and (:propertyAssignmentStatus = :propertyAssignmentStatus)";
+    public List<PropertyUnit> fetchFilteredUnits(String name, Integer rooms, Boolean assignmentStatus) {
+        String queryString = "from PropertyUnit where (:propertyNumberOrName is null or propertyNumberOrName = :propertyNumberOrName or propertyNumberOrName like concat('%', :propertyNumberOrName, '%')) and (:numberOfRooms is null or numberOfRooms = :numberOfRooms) and (propertyAssignmentStatus = :propertyAssignmentStatus)";
         TypedQuery<PropertyUnit> query = entityManager.createQuery(queryString, PropertyUnit.class);
         query.setParameter("propertyNumberOrName", name);
         query.setParameter("numberOfRooms", rooms);

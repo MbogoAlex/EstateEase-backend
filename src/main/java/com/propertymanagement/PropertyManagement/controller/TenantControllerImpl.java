@@ -44,7 +44,7 @@ public class TenantControllerImpl implements TenantController{
     }
 
     @Override
-    @PostMapping("/rentpayment/newrow")
+    @PostMapping("/rentpayment/alltenants/newrow")
     public ResponseEntity<Response> addNewRentPaymentRow(@RequestBody RentPaymentDTO rentPaymentDTO) {
         return buildResponse("rentPayment", tenantService.addNewRentPaymentRow(rentPaymentDTO ), "Created successfully", HttpStatus.OK);
     }

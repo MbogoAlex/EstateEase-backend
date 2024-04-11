@@ -33,8 +33,6 @@ public class RentPayment {
     private Double monthlyRent;
     @Column(name = "due_date")
     private LocalDate dueDate;
-    @Column(name = "days_late")
-    private int daysLate;
     @Column(name = "penalty_per_day")
     private Double penaltyPerDay;
     @Column(name = "penalty_active")

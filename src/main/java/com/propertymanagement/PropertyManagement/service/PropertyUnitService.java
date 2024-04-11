@@ -3,6 +3,7 @@ package com.propertymanagement.PropertyManagement.service;
 import com.propertymanagement.PropertyManagement.dto.PropertyUnitDTO;
 import com.propertymanagement.PropertyManagement.dto.RentPaymentOverviewDTO;
 import com.propertymanagement.PropertyManagement.dto.propertyResponse.PropertyUnitResponseDTO;
+import com.propertymanagement.PropertyManagement.entity.PropertyUnit;
 import com.propertymanagement.PropertyManagement.entity.RentPayment;
 
 import java.util.List;
@@ -15,7 +16,7 @@ public interface PropertyUnitService {
     PropertyUnitResponseDTO updateProperty(PropertyUnitDTO propertyUnitDTO, int propertyId);
 
     // archive property
-    PropertyUnitResponseDTO archiveProperty(int propertyId, int tenantId);
+    PropertyUnit archiveProperty(int propertyId, int tenantId);
 
     // delete property
     String deleteProperty(int id);
@@ -28,7 +29,7 @@ public interface PropertyUnitService {
 
     // ge all occupied units
 
-    List<PropertyUnitResponseDTO> fetchAllOccupiedUnits(String tenantName, Integer rooms, String roomName);
+    List<PropertyUnitResponseDTO> fetchFilteredUnits(String tenantName, Integer rooms, String roomName, Boolean occupied);
 
     List<PropertyUnitResponseDTO> fetchAllUnoccupiedUnits(int rooms, String roomName);
 

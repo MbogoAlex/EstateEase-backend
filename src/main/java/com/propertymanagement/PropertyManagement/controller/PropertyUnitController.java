@@ -29,13 +29,14 @@ public interface PropertyUnitController {
     ResponseEntity<Response> getPropertyByPropertyId(int propertyId);
 
 
+
     @GetMapping("/propertyunit/occupied")
-    ResponseEntity<Response> fetchAllOccupiedUnits(
+    ResponseEntity<Response> fetchFilteredUnits(
             @RequestParam(value = "tenantName", required = false) String tenantName,
             @RequestParam(value = "rooms", required = false) Integer rooms,
-            @RequestParam(value = "roomName", required = false) String roomName
+            @RequestParam(value = "roomName", required = false) String roomName,
+            @RequestParam(value = "occupied") Boolean occupied
     );
-
 
     @GetMapping("/propertyunit/unoccupied")
     ResponseEntity<Response> fetchAllUnoccupiedUnits(
