@@ -70,6 +70,30 @@ public class PManagerControllerImpl implements PManagerController {
     public ResponseEntity<Response> getRentPayments(@PathVariable("month") String month, @PathVariable("year") String year) {
         return buildResponse("rentpayment", pManagerService.getRentPaymentOverview(month, year), "Fetched successfully", HttpStatus.OK);
     }
+    @GetMapping("rentpaymen/detailed")
+
+    @Override
+    public ResponseEntity<Response> getRentPaymentDetailedInfo(
+            @RequestParam(value = "month") String month,
+            @RequestParam(value = "year") String year,
+            @RequestParam(value = "rooms", required = false) Integer rooms,
+            @RequestParam(value = "roomName", required = false) String roomName,
+            @RequestParam(value = "tenantName", required = false) String tenantName
+            ) {
+        return buildResponse("rentpayment", pManagerService.getRentPaymentDetailedInfo(month, year, rooms, roomName, tenantName), "Fetched successfully", HttpStatus.OK);
+    }
+    @GetMapping("rentpayment/detailed")
+    @Override
+    public ResponseEntity<Response> getDetailedRentPayments(
+            @RequestParam("month") String month,
+            @RequestParam("year") String year,
+            @RequestParam(value = "roomName", required = false) String roomName,
+            @RequestParam(value = "rooms", required = false) Integer rooms,
+            @RequestParam(value = "tenantName", required = false) String tenantName,
+            @RequestParam(value = "rentPaymentStatus", required = false) Boolean rentPaymentStatus
+    ) {
+        return buildResponse("rentpayment", pManagerService.getDetailedRentPayments(month, year, roomName, rooms, tenantName, rentPaymentStatus), "Fetched successfully", HttpStatus.OK);
+    }
 
     private ResponseEntity<Response> buildResponse(String desc, Object data, String message, HttpStatus status) {
         return ResponseEntity.status(status)

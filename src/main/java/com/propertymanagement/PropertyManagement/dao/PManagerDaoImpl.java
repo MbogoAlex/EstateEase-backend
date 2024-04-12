@@ -1,5 +1,6 @@
 package com.propertymanagement.PropertyManagement.dao;
 
+import com.propertymanagement.PropertyManagement.dto.DetailedRentPaymentInfoDTO;
 import com.propertymanagement.PropertyManagement.entity.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
@@ -124,6 +125,53 @@ public class PManagerDaoImpl implements PManagerDao {
         query.setParameter("year", year);
         return query.getResultList();
     }
+
+    @Override
+    public List<DetailedRentPaymentInfoDTO> getDetailedRentPayments(String month, String year, String propertyNumberOrName, Integer numberOfRooms, String tenantName, Boolean rentPaymentStatus) {
+        String query2 = "select new com.propertymanagement.PropertyManagement.dto.DetailedRentPaymentInfoDTO(" +
+                "rp.dueDate, " +
+                "rp.month, " +
+                "rp.monthlyRent, " +
+                "rp.paidAmount, " +
+                "rp.paidAt, " +
+                "rp.paidLate, " +
+                "rp.paymentStatus, " +
+                "rp.penaltyActive, " +
+                "rp.penaltyPerDay, " +
+                "rp.transactionId, " +
+                "rp.year, " +
+                "pu.propertyNumberOrName, " +
+                "pu.numberOfRooms, " +
+                "t.tenantId, " +
+                "t.email, " +
+                "t.fullName, " +
+                "t.nationalIdOrPassportNumber, " +
+                "t.phoneNumber, " +
+                "t.tenantAddedAt, " +
+                "t.tenantActive) " +
+                "from RentPayment rp " +
+                "join rp.tenant t " +
+                "join t.propertyUnit pu " +
+                "where MONTHNAME(rp.dueDate) = :month " +
+                "and YEAR(rp.dueDate) = :year " +
+                "and (:tenantName is null or t.fullName like concat('%', :tenantName, '%')) " +
+                "and (:numberOfRooms is null or pu.numberOfRooms = :numberOfRooms) " +
+                "and (:propertyNumberOrName is null or pu.propertyNumberOrName like concat('%', :propertyNumberOrName, '%')) " +
+                "and (:rentPaymentStatus is null or rp.paymentStatus = :rentPaymentStatus)";
+
+        TypedQuery<DetailedRentPaymentInfoDTO> query = entityManager.createQuery(query2, DetailedRentPaymentInfoDTO.class);
+        query.setParameter("month", month);
+        query.setParameter("year", year);
+        query.setParameter("tenantName", tenantName);
+        query.setParameter("numberOfRooms", numberOfRooms);
+        query.setParameter("propertyNumberOrName", propertyNumberOrName);
+        query.setParameter("rentPaymentStatus", rentPaymentStatus);
+
+        return query.getResultList();
+    }
+
+
+
 
 
 }

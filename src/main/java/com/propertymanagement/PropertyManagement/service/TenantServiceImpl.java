@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -190,6 +191,9 @@ public class TenantServiceImpl implements TenantService{
 
             // set current month
             rentPayment.setMonth(LocalDateTime.now().getMonth());
+
+            // set current year
+            rentPayment.setYear(Year.of(LocalDateTime.now().getYear()));
 
             // set due date
             rentPayment.setDueDate(rentPaymentDTO.getDueDate());

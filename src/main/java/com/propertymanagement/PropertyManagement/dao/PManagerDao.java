@@ -1,5 +1,6 @@
 package com.propertymanagement.PropertyManagement.dao;
 
+import com.propertymanagement.PropertyManagement.dto.DetailedRentPaymentInfoDTO;
 import com.propertymanagement.PropertyManagement.dto.PManagerLoginDTO;
 import com.propertymanagement.PropertyManagement.entity.*;
 
@@ -40,4 +41,5 @@ public interface PManagerDao {
 
     // fetch rent payment overview
     List<RentPayment> getRentPaymentOverview(String month, String year);
+    List<DetailedRentPaymentInfoDTO> getDetailedRentPayments(String month, String year, String roomName, Integer rooms, String tenantName, Boolean rentPaymentStatus);
 }

@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.time.Year;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,7 +26,9 @@ public class RentPayment {
 
     @Column(name = "month")
     private Month month;
-    @JsonBackReference
+    @Column(name = "year")
+    private Year year;
+//    @JsonBackReference
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
     @JoinColumn(name = "tenant_id")
     private Tenant tenant;

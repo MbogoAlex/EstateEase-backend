@@ -1,5 +1,6 @@
 package com.propertymanagement.PropertyManagement.controller;
 
+import com.propertymanagement.PropertyManagement.dto.DetailedRentPaymentInfoDTO;
 import com.propertymanagement.PropertyManagement.dto.PManagerDTO;
 import com.propertymanagement.PropertyManagement.dto.PManagerLoginDTO;
 import com.propertymanagement.PropertyManagement.dto.Response;
@@ -23,4 +24,8 @@ public interface PManagerController {
     ResponseEntity<Response> pManagerLogin(PManagerLoginDTO pManagerLoginDTO);
 
     ResponseEntity<Response> getRentPayments(String month, String year);
+
+    ResponseEntity<Response> getRentPaymentDetailedInfo(String month, String year, Integer rooms, String roomName, String tenantName);
+
+    ResponseEntity<Response> getDetailedRentPayments(String month, String year, String roomName, Integer rooms, String tenantName, Boolean rentPaymentStatus);
 }
