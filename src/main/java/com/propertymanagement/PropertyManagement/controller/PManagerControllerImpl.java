@@ -90,9 +90,11 @@ public class PManagerControllerImpl implements PManagerController {
             @RequestParam(value = "roomName", required = false) String roomName,
             @RequestParam(value = "rooms", required = false) Integer rooms,
             @RequestParam(value = "tenantName", required = false) String tenantName,
-            @RequestParam(value = "rentPaymentStatus", required = false) Boolean rentPaymentStatus
+            @RequestParam(value = "tenantId", required = false) Integer tenantId,
+            @RequestParam(value = "rentPaymentStatus", required = false) Boolean rentPaymentStatus,
+            @RequestParam(value = "paidLate", required = false) Boolean paidLate
     ) {
-        return buildResponse("rentpayment", pManagerService.getDetailedRentPayments(month, year, roomName, rooms, tenantName, rentPaymentStatus), "Fetched successfully", HttpStatus.OK);
+        return buildResponse("rentpayment", pManagerService.getDetailedRentPayments(month, year, roomName, rooms, tenantName, tenantId, rentPaymentStatus, paidLate), "Fetched successfully", HttpStatus.OK);
     }
 
     private ResponseEntity<Response> buildResponse(String desc, Object data, String message, HttpStatus status) {

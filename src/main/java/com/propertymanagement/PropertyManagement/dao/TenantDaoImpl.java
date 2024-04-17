@@ -80,4 +80,25 @@ public class TenantDaoImpl implements TenantDao{
         TypedQuery<Tenant> query = entityManager.createQuery("from Tenant where tenantActive = true", Tenant.class);
         return query.getResultList();
     }
+
+    @Override
+    public List<RentPayment> getRentPaymentRows(String month, String year) {
+        TypedQuery<RentPayment> query = entityManager.createQuery("from RentPayment where MONTHNAME(dueDate) = :month AND YEAR(dueDate) = :year", RentPayment.class);
+        query.setParameter("month", month);
+        query.setParameter("year", year);
+        return query.getResultList();
+    }
+
+    @Override
+    public RentPayment getSingleRentPaymentRow(int rentPaymentTblId) {
+        TypedQuery<RentPayment> query = entityManager.createQuery("from RentPayment where rentPaymentTblId = :rentPaymentTblId", RentPayment.class);
+        query.setParameter("rentPaymentTblId", rentPaymentTblId);
+        return query.getSingleResult();
+    }
+
+    @Override
+    public RentPayment updateRentPaymentRow(RentPayment rentPayment) {
+        entityManager.merge(rentPayment);
+        return rentPayment;
+    }
 }

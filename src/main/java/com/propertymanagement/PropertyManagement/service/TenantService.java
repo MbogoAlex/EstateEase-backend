@@ -25,12 +25,18 @@ public interface TenantService {
 
     // update rent payment
 
-    RentPayment payRent(RentPaymentRequestDTO rentPaymentRequestDTO, int rentPaymentTblId);
+    RentPaymentDetailsDTO payRent(RentPaymentRequestDTO rentPaymentRequestDTO, int rentPaymentTblId);
 
     // archive tenant
     TenantResponseDTO archiveTenant(int tenantId, int propertyId);
 
     TenantResponseDTO tenantLogin(TenantLoginDTO tenantLoginDTO);
 
+    RentPaymentDetailsDTO activateLatePaymentPenaltyForSingleTenant(RentPenaltyDTO rentPenaltyDTO, int rentPaymentTblId);
 
+    RentPaymentDetailsDTO deActivateLatePaymentPenaltyForSingleTenant(int rentPaymentTblId);
+
+    List<RentPaymentDetailsDTO> activateLatePaymentPenaltyForMultipleTenants(RentPenaltyDTO rentPenaltyDTO, String month, String year);
+
+    List<RentPaymentDetailsDTO> deActivateLatePaymentPenaltyForMultipleTenants(String month, String year);
 }

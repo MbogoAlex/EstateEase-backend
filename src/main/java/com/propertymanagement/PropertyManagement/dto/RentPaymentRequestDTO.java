@@ -8,6 +8,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RentPaymentRequestDTO {
-    private int tenantId;
     private Double payableAmount;
 }

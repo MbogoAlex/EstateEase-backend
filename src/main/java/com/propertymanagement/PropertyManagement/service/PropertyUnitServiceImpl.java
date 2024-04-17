@@ -137,29 +137,29 @@ public class PropertyUnitServiceImpl implements PropertyUnitService{
                 occupied
         );
 
-        for(PropertyUnit propertyUnit : properties) {
-
-            if(!propertyUnit.getTenants().isEmpty()) {
+        if(occupied) {
+            for(PropertyUnit propertyUnit : properties) {
                 for(Tenant tenant : propertyUnit.getTenants()) {
                     if(tenant.getTenantActive()) {
                         if(tenantName != null) {
                             tenantName = tenantName.toLowerCase();
                             if(tenant.getFullName().toLowerCase().contains(tenantName) || tenant.getFullName().toLowerCase().equals(tenantName)) {
-                                propertiesDto.add(mapPropertyToPropertyDto(propertyUnit));
+                                propertiesDto.add(mapFilteredPropertyToPropertyDto(propertyUnit, true));
                             }
                         } else {
-                            propertiesDto.add(mapPropertyToPropertyDto(propertyUnit));
+                            propertiesDto.add(mapFilteredPropertyToPropertyDto(propertyUnit, true));
                         }
-
-                    } else {
-                        propertiesDto.add(mapPropertyToPropertyDto(propertyUnit));
                     }
                 }
-            } else {
-                propertiesDto.add(mapPropertyToPropertyDto(propertyUnit));
+            }
+        } else if(!occupied) {
+            for(PropertyUnit propertyUnit : properties) {
+                propertiesDto.add(mapFilteredPropertyToPropertyDto(propertyUnit, false));
             }
 
         }
+
+
         return propertiesDto;
     }
 
@@ -203,5 +203,40 @@ public class PropertyUnitServiceImpl implements PropertyUnitService{
         return propertyUnitResponseDTO;
     }
 
+    PropertyUnitResponseDTO mapFilteredPropertyToPropertyDto(PropertyUnit propertyUnit, Boolean occupied) {
+        PropertyUnitResponseDTO propertyUnitResponseDTO = new PropertyUnitResponseDTO();
+        propertyUnitResponseDTO.setPropertyUnitId(propertyUnit.getPropertyUnitId());
+        propertyUnitResponseDTO.setNumberOfRooms(propertyUnit.getNumberOfRooms());
+        propertyUnitResponseDTO.setPropertyNumberOrName(propertyUnit.getPropertyNumberOrName());
+        propertyUnitResponseDTO.setPropertyDescription(propertyUnit.getPropertyDescription());
+        propertyUnitResponseDTO.setMonthlyRent(propertyUnit.getMonthlyRent());
+        propertyUnitResponseDTO.setPropertyAddedAt(propertyUnit.getPropertyAddedAt().toString());
+        propertyUnitResponseDTO.setPropertyAssignmentStatus(propertyUnit.getPropertyAssignmentStatus());
+        for(Tenant tenant : propertyUnit.getTenants()) {
+            if(occupied) {
+                if(tenant.getTenantActive()) {
+                    PropertyTenantDTO propertyTenant = new PropertyTenantDTO();
+                    propertyTenant.setTenantId(tenant.getTenantId());
+                    propertyTenant.setFullName(tenant.getFullName());
+                    propertyTenant.setEmail(tenant.getEmail());
+                    propertyTenant.setTenantAddedAt(tenant.getTenantAddedAt().toString());
+                    propertyTenant.setPhoneNumber(tenant.getPhoneNumber());
+                    propertyTenant.setTenantActive(tenant.getTenantActive());
+                    propertyUnitResponseDTO.getTenants().add(propertyTenant);
+                }
+            } else if(!occupied) {
+                PropertyTenantDTO propertyTenant = new PropertyTenantDTO();
+                propertyTenant.setTenantId(tenant.getTenantId());
+                propertyTenant.setFullName(tenant.getFullName());
+                propertyTenant.setEmail(tenant.getEmail());
+                propertyTenant.setTenantAddedAt(tenant.getTenantAddedAt().toString());
+                propertyTenant.setPhoneNumber(tenant.getPhoneNumber());
+                propertyTenant.setTenantActive(tenant.getTenantActive());
+                propertyUnitResponseDTO.getTenants().add(propertyTenant);
+            }
 
+
+        }
+        return propertyUnitResponseDTO;
+    }
 }

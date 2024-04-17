@@ -8,13 +8,18 @@ import com.propertymanagement.PropertyManagement.dto.tenantResponse.TenantProper
 import com.propertymanagement.PropertyManagement.dto.tenantResponse.TenantResponseDTO;
 import com.propertymanagement.PropertyManagement.entity.*;
 import com.propertymanagement.PropertyManagement.exception.DataNotFoundException;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.time.Year;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -37,7 +42,6 @@ public class TenantServiceImpl implements TenantService{
     @Transactional
     @Override
     public TenantResponseDTO addNewTenant(TenantDTO tenantDTO) {
-        System.out.println("ADDING NEW TENANT: "+tenantDTO.toString());
         Tenant tenant = new Tenant();
         // set tenant name
         tenant.setFullName(tenantDTO.getFullName());
@@ -72,6 +76,7 @@ public class TenantServiceImpl implements TenantService{
         rentPayment.setTenant(tenant);
         rentPayment.setTransactionId(null);
         rentPayment.setMonth(LocalDateTime.now().getMonth());
+        rentPayment.setYear(Year.of(LocalDateTime.now().getYear()));
         rentPayment.setDueDate(LocalDate.now());
         rentPayment.setPenaltyPerDay(tenantDTO.getPenaltyPerDay());
         rentPayment.setPenaltyActive(true);
@@ -167,7 +172,6 @@ public class TenantServiceImpl implements TenantService{
 
         List<Tenant> tenants = tenantDao.getActiveTenants();
 
-        System.out.println("RENT DUE ON: "+rentPaymentDTO.getDueDate());
 
         for(Tenant tenant : tenants) {
             RentPayment rentPayment = new RentPayment();
@@ -208,17 +212,24 @@ public class TenantServiceImpl implements TenantService{
     }
     @Transactional
     @Override
-    public RentPayment payRent(RentPaymentRequestDTO rentPaymentRequestDTO, int rentPaymentTblId) {
+    public RentPaymentDetailsDTO payRent(RentPaymentRequestDTO rentPaymentRequestDTO, int rentPaymentTblId) {
         Random random = new Random();
-        Tenant tenant = tenantDao.getTenantByTenantId(rentPaymentRequestDTO.getTenantId());
         RentPayment rentPayment = tenantDao.getRentPaymentRow(rentPaymentTblId);
-        rentPayment.setTransactionId(String.valueOf(random.nextInt()));
-        rentPayment.setPaidAmount(tenant.getPropertyUnit().getMonthlyRent());
-        rentPayment.setPaymentStatus(true);
-        rentPayment.setPaidAt(LocalDateTime.now());
+        if(!rentPayment.getPaymentStatus()) {
+            rentPayment.setTransactionId(String.valueOf(random.nextInt()));
+            rentPayment.setPaidAmount(rentPaymentRequestDTO.getPayableAmount());
+            rentPayment.setPaymentStatus(true);
+            if(ChronoUnit.DAYS.between(rentPayment.getDueDate(), LocalDateTime.now()) > 0) {
+                rentPayment.setPaidLate(true);
+            } else {
+                rentPayment.setPaidLate(false);
+            }
+            rentPayment.setPaidAt(LocalDateTime.now());
+            return mapRentPaymentsToRentPaymentsDetailsDTO(tenantDao.payRent(rentPayment));
+        } else {
+            throw new DataNotFoundException("Invalid entry");
+        }
 
-
-        return tenantDao.payRent(rentPayment);
     }
     @Transactional
     @Override
@@ -239,6 +250,8 @@ public class TenantServiceImpl implements TenantService{
         return mapTenantToTenantResponseDTO(tenantDao.archiveTenant(tenant));
     }
 
+
+
     @Override
     public TenantResponseDTO tenantLogin(TenantLoginDTO tenantLoginDTO) {
         String roomNumberOrName = tenantLoginDTO.getTenantRoomNameOrNumber();
@@ -247,8 +260,7 @@ public class TenantServiceImpl implements TenantService{
 
         // fetch tenant by password and phone number
         Tenant tenant = tenantDao.fetchTenantByPasswordAndPhoneNumber(tenantPassword, phoneNumber);
-        System.out.println("roomNumberOrName: "+roomNumberOrName);
-        System.out.println("tenant.getPropertyUnit().getPropertyNumberOrName(): "+tenant.getPropertyUnit().getPropertyNumberOrName());
+
         if(tenant.getPropertyUnit().getPropertyNumberOrName().equals(roomNumberOrName)) {
             return mapTenantToTenantResponseDTO(tenant);
         } else {
@@ -256,9 +268,58 @@ public class TenantServiceImpl implements TenantService{
         }
 
     }
+    @Transactional
+    @Override
+    public RentPaymentDetailsDTO activateLatePaymentPenaltyForSingleTenant(RentPenaltyDTO rentPenaltyDTO,  int rentPaymentTblId) {
+        RentPayment rentPayment = tenantDao.getRentPaymentRow(rentPaymentTblId);
+        rentPayment.setPenaltyActive(true);
+        rentPayment.setPenaltyPerDay(rentPenaltyDTO.getPenaltyPerDay());
+        tenantDao.updateRentPaymentRow(rentPayment);
+        return mapRentPaymentsToRentPaymentsDetailsDTO(rentPayment);
+    }
+    @Transactional
+    @Override
+    public RentPaymentDetailsDTO deActivateLatePaymentPenaltyForSingleTenant(int rentPaymentTblId) {
+        RentPayment rentPayment = tenantDao.getRentPaymentRow(rentPaymentTblId);
+        rentPayment.setPenaltyActive(false);
+        tenantDao.updateRentPaymentRow(rentPayment);
+        return mapRentPaymentsToRentPaymentsDetailsDTO(rentPayment);
+    }
+    @Transactional
+    @Override
+    public List<RentPaymentDetailsDTO> activateLatePaymentPenaltyForMultipleTenants(RentPenaltyDTO rentPenaltyDTO, String month, String year) {
+        List<RentPaymentDetailsDTO> rentPaymentDetailsDTOS = new ArrayList<>();
+        List<RentPayment> rentPayments = tenantDao.getRentPaymentRows(month, year);
+
+        for(RentPayment rentPayment : rentPayments) {
+            rentPayment.setPenaltyActive(true);
+            rentPayment.setPenaltyPerDay(rentPenaltyDTO.getPenaltyPerDay());
+            tenantDao.updateRentPaymentRow(rentPayment);
+            rentPaymentDetailsDTOS.add(mapRentPaymentsToRentPaymentsDetailsDTO(rentPayment));
+        }
+        return rentPaymentDetailsDTOS;
+    }
+    @Transactional
+    @Override
+    public List<RentPaymentDetailsDTO> deActivateLatePaymentPenaltyForMultipleTenants(String month, String year) {
+        List<RentPaymentDetailsDTO> rentPaymentDetailsDTOS = new ArrayList<>();
+        List<RentPayment> rentPayments = tenantDao.getRentPaymentRows(month, year);
+
+        List<RentPayment> processed = new ArrayList<>();
+
+        for(RentPayment rentPayment : rentPayments) {
+            rentPayment.setPenaltyActive(false);
+            processed.add(rentPayment);
+            rentPaymentDetailsDTOS.add(mapRentPaymentsToRentPaymentsDetailsDTO(rentPayment));
+        }
+
+        return rentPaymentDetailsDTOS;
+    }
+
 
     TenantResponseDTO mapTenantToTenantResponseDTO(Tenant tenant) {
         TenantResponseDTO tenantResponseDTO = new TenantResponseDTO();
+
         tenantResponseDTO.setTenantId(tenant.getTenantId());
         tenantResponseDTO.setFullName(tenant.getFullName());
         tenantResponseDTO.setNationalIdOrPassportNumber(tenant.getNationalIdOrPassportNumber());
@@ -266,7 +327,42 @@ public class TenantServiceImpl implements TenantService{
         tenantResponseDTO.setEmail(tenant.getEmail());
         tenantResponseDTO.setTenantAddedAt(tenant.getTenantAddedAt().toString());
         tenantResponseDTO.setTenantActive(tenant.getTenantActive());
-        tenantResponseDTO.getRentPayments().addAll(tenant.getRentPayments());
+
+        for(RentPayment rentPayment : tenant.getRentPayments()) {
+            long daysLate;
+            TenantResponseDTO.PaymentInfoDTO paymentInfo = new TenantResponseDTO.PaymentInfoDTO();
+            paymentInfo.setRentPaymentTblId(rentPayment.getRentPaymentTblId());
+            paymentInfo.setDueDate(rentPayment.getDueDate());
+            paymentInfo.setMonth(rentPayment.getMonth());
+            paymentInfo.setMonthlyRent(rentPayment.getMonthlyRent());
+            paymentInfo.setPaidAmount(rentPayment.getPaidAmount());
+            paymentInfo.setPaidLate(rentPayment.getPaidLate());
+            paymentInfo.setPaidAt(rentPayment.getPaidAt());
+
+            if(!rentPayment.getPaymentStatus() && ChronoUnit.DAYS.between(rentPayment.getDueDate(), LocalDateTime.now()) > 0) {
+                daysLate = ChronoUnit.DAYS.between(rentPayment.getDueDate(), LocalDateTime.now());
+            } else if (rentPayment.getPaymentStatus() && ChronoUnit.DAYS.between(rentPayment.getDueDate(), rentPayment.getPaidAt()) > 0) {
+                daysLate = ChronoUnit.DAYS.between(rentPayment.getDueDate(), rentPayment.getPaidAt());
+            } else {
+                daysLate = 0;
+            }
+            paymentInfo.setDaysLate(daysLate);
+            paymentInfo.setRentPaymentStatus(rentPayment.getPaymentStatus());
+            paymentInfo.setPenaltyActive(rentPayment.getPenaltyActive());
+            paymentInfo.setPenaltyPerDay(rentPayment.getPenaltyPerDay());
+            paymentInfo.setTransactionId(rentPayment.getTransactionId());
+            paymentInfo.setYear(rentPayment.getYear());
+            paymentInfo.setPropertyNumberOrName(tenant.getPropertyUnit().getPropertyNumberOrName());
+            paymentInfo.setNumberOfRooms(tenant.getPropertyUnit().getNumberOfRooms());
+            paymentInfo.setTenantId(tenant.getTenantId());
+            paymentInfo.setEmail(tenant.getEmail());
+            paymentInfo.setFullName(tenant.getFullName());
+            paymentInfo.setNationalIdOrPassport(tenant.getNationalIdOrPassportNumber());
+            paymentInfo.setPhoneNumber(tenant.getPhoneNumber());
+            paymentInfo.setTenantAddedAt(tenant.getTenantAddedAt());
+            paymentInfo.setTenantActive(tenant.getTenantActive());
+            tenantResponseDTO.getPaymentInfo().add(paymentInfo);
+        }
 
         // tenant property unit details
 
@@ -281,5 +377,46 @@ public class TenantServiceImpl implements TenantService{
         tenantResponseDTO.setPropertyUnit(tenantPropertyDTO);
 
         return tenantResponseDTO;
+    }
+
+    RentPaymentDetailsDTO mapRentPaymentsToRentPaymentsDetailsDTO(RentPayment rentPayment) {
+        RentPaymentDetailsDTO rentPaymentDetailsDTO = new RentPaymentDetailsDTO();
+        RentPaymentDetailsDTO.TenantDataDTO tenantDataDTO = new RentPaymentDetailsDTO.TenantDataDTO();
+        rentPaymentDetailsDTO.setRentPaymentTblId(rentPayment.getRentPaymentTblId());
+        rentPaymentDetailsDTO.setTransactionId(rentPayment.getTransactionId());
+        rentPaymentDetailsDTO.setMonth(rentPayment.getMonth());
+        rentPaymentDetailsDTO.setYear(rentPayment.getYear());
+        rentPaymentDetailsDTO.setDueDate(rentPayment.getDueDate());
+        rentPaymentDetailsDTO.setRentPaymentStatus(rentPayment.getPaymentStatus());
+        rentPaymentDetailsDTO.setPenaltyActive(rentPayment.getPenaltyActive());
+        rentPaymentDetailsDTO.setPenaltyPerDay(rentPayment.getPenaltyPerDay());
+        rentPaymentDetailsDTO.setPaidAmount(rentPayment.getPaidAmount());
+        rentPaymentDetailsDTO.setPaidAt(rentPayment.getPaidAt());
+        rentPaymentDetailsDTO.setPaidLate(rentPayment.getPaidLate());
+        rentPaymentDetailsDTO.setUnitName(rentPayment.getTenant().getPropertyUnit().getPropertyNumberOrName());
+        tenantDataDTO.setTenantId(rentPayment.getTenant().getTenantId());
+        tenantDataDTO.setFullName(rentPayment.getTenant().getFullName());
+        tenantDataDTO.setNationalIdOrPassportNumber(rentPayment.getTenant().getNationalIdOrPassportNumber());
+        tenantDataDTO.setPhoneNumber(rentPayment.getTenant().getPhoneNumber());
+        tenantDataDTO.setEmail(rentPayment.getTenant().getEmail());
+        tenantDataDTO.setTenantAddedAt(rentPayment.getTenant().getTenantAddedAt());
+        tenantDataDTO.setTenantActive(rentPayment.getTenant().getTenantActive());
+
+        long daysLate;
+
+        if(!rentPayment.getPaymentStatus() && ChronoUnit.DAYS.between(rentPayment.getDueDate(), LocalDateTime.now()) > 0) {
+            daysLate = ChronoUnit.DAYS.between(rentPayment.getDueDate(), LocalDateTime.now());
+        } else if (rentPayment.getPaymentStatus() && ChronoUnit.DAYS.between(rentPayment.getDueDate(), rentPayment.getPaidAt()) > 0) {
+            daysLate = ChronoUnit.DAYS.between(rentPayment.getDueDate(), rentPayment.getPaidAt());
+        } else {
+            daysLate = 0;
+        }
+
+        rentPaymentDetailsDTO.setMonthlyRent(rentPayment.getMonthlyRent());
+        rentPaymentDetailsDTO.setDaysLate(daysLate);
+
+        rentPaymentDetailsDTO.setTenant(tenantDataDTO);
+
+        return rentPaymentDetailsDTO;
     }
 }

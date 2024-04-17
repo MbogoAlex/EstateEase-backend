@@ -173,28 +173,7 @@ public class PManagerServiceImpl implements PManagerService {
             }
         }
 
-//        for(RentPayment rentPayment : rentPayments) {
 //
-//            if(rooms != null) {
-//                System.out.println("ROOMS NOT NULL");
-//                System.out.println("COMPARING: "+rentPayment.getTenant().getPropertyUnit().getNumberOfRooms()+ " WITH "+rooms);
-//                if(rentPayment.getTenant().getPropertyUnit().getNumberOfRooms() == rooms) {
-//                    System.out.println("ADDED ROOM");
-//                    processedData.add(rentPayment);
-//                }
-//            }
-//            if(roomName != null) {
-//                if(rentPayment.getTenant().getPropertyUnit().getPropertyNumberOrName().toLowerCase().contains(roomName.toLowerCase())) {
-//                    processedData.add(rentPayment);
-//                }
-//            }
-//            if(tenantName != null) {
-//                if(rentPayment.getTenant().getFullName().toLowerCase().contains(tenantName.toLowerCase())) {
-//                    processedData.add(rentPayment);
-//                }
-//            }
-//
-//        }
 
         System.out.println("ARE PARAMETERS EMPTY: "+tenantName != null || rooms != null || roomName != null);
 
@@ -223,8 +202,24 @@ public class PManagerServiceImpl implements PManagerService {
     }
 
     @Override
-    public List<DetailedRentPaymentInfoDTO> getDetailedRentPayments(String month, String year, String roomName, Integer rooms, String tenantName, Boolean rentPaymentStatus) {
-        return pManagerDao.getDetailedRentPayments(month, year, roomName, rooms, tenantName, rentPaymentStatus);
+    public List<DetailedRentPaymentInfoDTO> getDetailedRentPayments(String month, String year, String roomName, Integer rooms, String tenantName, Integer tenantId, Boolean rentPaymentStatus, Boolean paidLate) {
+
+        List<DetailedRentPaymentInfoDTO> rentPayments = pManagerDao.getDetailedRentPayments(month, year, roomName, rooms, tenantName, tenantId, rentPaymentStatus, paidLate);
+        for(DetailedRentPaymentInfoDTO rentPayment : rentPayments) {
+            long daysLate;
+
+            if(!rentPayment.getRentPaymentStatus() && ChronoUnit.DAYS.between(rentPayment.getDueDate(), LocalDateTime.now()) > 0) {
+                daysLate = ChronoUnit.DAYS.between(rentPayment.getDueDate(), LocalDateTime.now());
+            } else if (rentPayment.getRentPaymentStatus() && ChronoUnit.DAYS.between(rentPayment.getDueDate(), rentPayment.getPaidAt()) > 0) {
+                daysLate = ChronoUnit.DAYS.between(rentPayment.getDueDate(), rentPayment.getPaidAt());
+            } else {
+                daysLate = 0;
+            }
+            rentPayment.setDaysLate(daysLate);
+        }
+
+
+        return rentPayments;
     }
 
 

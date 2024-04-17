@@ -68,6 +68,31 @@ public class TenantControllerImpl implements TenantController{
         return buildResponse("tenant", tenantService.tenantLogin(tenantLoginDTO), "Login successful", HttpStatus.OK);
     }
 
+    @Override
+    @PutMapping("/tenant/penalty/activate/rentPaymentTblId={rentPaymentTblId}")
+    public ResponseEntity<Response> activateLatePaymentPenaltyForSingleTenant(@RequestBody RentPenaltyDTO rentPenaltyDTO, @PathVariable("rentPaymentTblId") int rentPaymentTblId) {
+        return buildResponse("rentpayment", tenantService.activateLatePaymentPenaltyForSingleTenant(rentPenaltyDTO, rentPaymentTblId), "Penalty activated", HttpStatus.OK);
+    }
+
+    @Override
+    @PutMapping("/tenant/penalty/deactivate/rentPaymentTblId={rentPaymentTblId}")
+    public ResponseEntity<Response> deActivateLatePaymentPenaltyForSingleTenant(@PathVariable("rentPaymentTblId") int rentPaymentTblId) {
+        return buildResponse("rentpaymet", tenantService.deActivateLatePaymentPenaltyForSingleTenant(rentPaymentTblId), "Penalty deactivated", HttpStatus.OK);
+    }
+
+
+    @Override
+    @PutMapping("/tenant/penalty/activate/month={month}/year={year}")
+    public ResponseEntity<Response> activateLatePaymentPenaltyForMultipleTenants(@RequestBody RentPenaltyDTO rentPenaltyDTO, @PathVariable("month") String month, @PathVariable("year") String year) {
+        return buildResponse("rentpayment", tenantService.activateLatePaymentPenaltyForMultipleTenants(rentPenaltyDTO, month, year), "Penalty activated", HttpStatus.OK);
+    }
+
+    @Override
+    @PutMapping("/tenant/penalty/deactivate/month={month}/year={year}")
+    public ResponseEntity<Response> deActivateLatePaymentPenaltyForMultipleTenants(@PathVariable("month") String month, @PathVariable("year") String year) {
+        return buildResponse("rentpayment", tenantService.deActivateLatePaymentPenaltyForMultipleTenants(month, year), "Penalty deactivated", HttpStatus.OK);
+    }
+
     private ResponseEntity<Response> buildResponse(String desc, Object data, String message, HttpStatus status) {
         return ResponseEntity.status(status)
                 .body(Response.builder()

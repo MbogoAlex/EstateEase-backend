@@ -127,8 +127,9 @@ public class PManagerDaoImpl implements PManagerDao {
     }
 
     @Override
-    public List<DetailedRentPaymentInfoDTO> getDetailedRentPayments(String month, String year, String propertyNumberOrName, Integer numberOfRooms, String tenantName, Boolean rentPaymentStatus) {
-        String query2 = "select new com.propertymanagement.PropertyManagement.dto.DetailedRentPaymentInfoDTO(" +
+    public List<DetailedRentPaymentInfoDTO> getDetailedRentPayments(String month, String year, String propertyNumberOrName, Integer numberOfRooms, String tenantName, Integer tenantId, Boolean rentPaymentStatus, Boolean paidLate) {
+        String stringQuery = "select new DetailedRentPaymentInfoDTO(" +
+                "rp.rentPaymentTblId, " +
                 "rp.dueDate, " +
                 "rp.month, " +
                 "rp.monthlyRent, " +
@@ -155,17 +156,21 @@ public class PManagerDaoImpl implements PManagerDao {
                 "where MONTHNAME(rp.dueDate) = :month " +
                 "and YEAR(rp.dueDate) = :year " +
                 "and (:tenantName is null or t.fullName like concat('%', :tenantName, '%')) " +
+                "and (:tenantId is null or t.tenantId = :tenantId)" +
                 "and (:numberOfRooms is null or pu.numberOfRooms = :numberOfRooms) " +
                 "and (:propertyNumberOrName is null or pu.propertyNumberOrName like concat('%', :propertyNumberOrName, '%')) " +
-                "and (:rentPaymentStatus is null or rp.paymentStatus = :rentPaymentStatus)";
+                "and (:rentPaymentStatus is null or rp.paymentStatus = :rentPaymentStatus)" +
+                "and (:paidLate is null or rp.paidLate = :paidLate)";
 
-        TypedQuery<DetailedRentPaymentInfoDTO> query = entityManager.createQuery(query2, DetailedRentPaymentInfoDTO.class);
+        TypedQuery<DetailedRentPaymentInfoDTO> query = entityManager.createQuery(stringQuery, DetailedRentPaymentInfoDTO.class);
         query.setParameter("month", month);
         query.setParameter("year", year);
         query.setParameter("tenantName", tenantName);
+        query.setParameter("tenantId", tenantId);
         query.setParameter("numberOfRooms", numberOfRooms);
         query.setParameter("propertyNumberOrName", propertyNumberOrName);
         query.setParameter("rentPaymentStatus", rentPaymentStatus);
+        query.setParameter("paidLate", paidLate);
 
         return query.getResultList();
     }

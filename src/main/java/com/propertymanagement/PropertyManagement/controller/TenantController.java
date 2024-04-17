@@ -31,5 +31,26 @@ public interface TenantController {
 
     // archive tenant
     ResponseEntity<Response> archiveTenant(int tenantId, int propertyId);
+
+    // tenant login
     ResponseEntity<Response> tenantLogin(TenantLoginDTO tenantLoginDTO);
+
+    // activate rent payment penalty for single tenant
+
+    ResponseEntity<Response> activateLatePaymentPenaltyForSingleTenant(RentPenaltyDTO rentPenaltyDTO, int rentPaymentTblId);
+
+    // deactivate rent payment penalty for single tenant
+
+    ResponseEntity<Response> deActivateLatePaymentPenaltyForSingleTenant(int rentPaymentTblId);
+
+    // activate rent payment penalty for multiple tenants
+
+//    ResponseEntity<Response> activateLatePaymentPenaltyForMultipleTenants(RentPenaltyDTO rentPenaltyDTO, String month, String year);
+
+    ResponseEntity<Response> activateLatePaymentPenaltyForMultipleTenants(RentPenaltyDTO rentPenaltyDTO, String month, String year);
+
+    // deactivate rent payment penalty for multiple tenants
+
+    ResponseEntity<Response> deActivateLatePaymentPenaltyForMultipleTenants(String month, String year);
+
 }

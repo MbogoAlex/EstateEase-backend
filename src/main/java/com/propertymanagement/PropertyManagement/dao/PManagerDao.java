@@ -41,5 +41,5 @@ public interface PManagerDao {
 
     // fetch rent payment overview
     List<RentPayment> getRentPaymentOverview(String month, String year);
-    List<DetailedRentPaymentInfoDTO> getDetailedRentPayments(String month, String year, String roomName, Integer rooms, String tenantName, Boolean rentPaymentStatus);
+    List<DetailedRentPaymentInfoDTO> getDetailedRentPayments(String month, String year, String roomName, Integer rooms, String tenantName, Integer tenantId, Boolean rentPaymentStatus, Boolean paidLate);
 }
