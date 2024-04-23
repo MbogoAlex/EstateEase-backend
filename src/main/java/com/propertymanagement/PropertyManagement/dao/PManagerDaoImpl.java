@@ -127,7 +127,7 @@ public class PManagerDaoImpl implements PManagerDao {
     }
 
     @Override
-    public List<DetailedRentPaymentInfoDTO> getDetailedRentPayments(String month, String year, String propertyNumberOrName, Integer numberOfRooms, String tenantName, Integer tenantId, Boolean rentPaymentStatus, Boolean paidLate) {
+    public List<DetailedRentPaymentInfoDTO> getDetailedRentPayments(String month, String year, String propertyNumberOrName, Integer numberOfRooms, String tenantName, Integer tenantId, Boolean rentPaymentStatus, Boolean paidLate, Boolean tenantActive) {
         String stringQuery = "select new DetailedRentPaymentInfoDTO(" +
                 "rp.rentPaymentTblId, " +
                 "rp.dueDate, " +
@@ -160,7 +160,8 @@ public class PManagerDaoImpl implements PManagerDao {
                 "and (:numberOfRooms is null or pu.numberOfRooms = :numberOfRooms) " +
                 "and (:propertyNumberOrName is null or pu.propertyNumberOrName like concat('%', :propertyNumberOrName, '%')) " +
                 "and (:rentPaymentStatus is null or rp.paymentStatus = :rentPaymentStatus)" +
-                "and (:paidLate is null or rp.paidLate = :paidLate)";
+                "and (:paidLate is null or rp.paidLate = :paidLate)" +
+                "and (:tenantActive is null or t.tenantActive = :tenantActive)";
 
         TypedQuery<DetailedRentPaymentInfoDTO> query = entityManager.createQuery(stringQuery, DetailedRentPaymentInfoDTO.class);
         query.setParameter("month", month);
@@ -171,12 +172,8 @@ public class PManagerDaoImpl implements PManagerDao {
         query.setParameter("propertyNumberOrName", propertyNumberOrName);
         query.setParameter("rentPaymentStatus", rentPaymentStatus);
         query.setParameter("paidLate", paidLate);
+        query.setParameter("tenantActive", tenantActive);
 
         return query.getResultList();
     }
-
-
-
-
-
 }

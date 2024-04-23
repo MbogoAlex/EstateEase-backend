@@ -6,6 +6,7 @@ import com.propertymanagement.PropertyManagement.dto.Response;
 import com.propertymanagement.PropertyManagement.dto.RoleDTO;
 import com.propertymanagement.PropertyManagement.entity.PManager;
 import com.propertymanagement.PropertyManagement.entity.Role;
+import com.propertymanagement.PropertyManagement.service.PManagerService;
 import com.propertymanagement.PropertyManagement.service.PManagerServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,28 +20,28 @@ import static java.util.Map.of;
 @RestController
 @RequestMapping("/api")
 public class PManagerControllerImpl implements PManagerController {
-    private PManagerServiceImpl pManagerService;
+    private PManagerService pManagerService;
 
     @Autowired
-    public PManagerControllerImpl(PManagerServiceImpl pManagerService) {
+    public PManagerControllerImpl(PManagerService pManagerService) {
         this.pManagerService = pManagerService;
     }
-
-    @PostMapping("/role")
-    public ResponseEntity<Response> addNewRole(@RequestBody RoleDTO roleDTO) {
-        return buildResponse("role", pManagerService.addNewRole(roleDTO), "Created successfully", HttpStatus.CREATED) ;
-    }
-
-    @DeleteMapping ("/role/{id}")
-    public String removeRole(@PathVariable("id") int roleId) {
-        return pManagerService.removeRole(roleId);
-    }
-
-
-    @DeleteMapping("/pmanager/{id}")
-    public String removePropertyManager(@PathVariable("id") int id) {
-        return pManagerService.removePropertyManager(id);
-    }
+//
+//    @PostMapping("/role")
+//    public ResponseEntity<Response> addNewRole(@RequestBody RoleDTO roleDTO) {
+//        return buildResponse("role", pManagerService.addNewRole(roleDTO), "Created successfully", HttpStatus.CREATED) ;
+//    }
+//
+//    @DeleteMapping ("/role/{id}")
+//    public String removeRole(@PathVariable("id") int roleId) {
+//        return pManagerService.removeRole(roleId);
+//    }
+//
+//
+//    @DeleteMapping("/pmanager/{id}")
+//    public String removePropertyManager(@PathVariable("id") int id) {
+//        return pManagerService.removePropertyManager(id);
+//    }
 
     @Override
     @PostMapping("/pmanager")
@@ -92,9 +93,10 @@ public class PManagerControllerImpl implements PManagerController {
             @RequestParam(value = "tenantName", required = false) String tenantName,
             @RequestParam(value = "tenantId", required = false) Integer tenantId,
             @RequestParam(value = "rentPaymentStatus", required = false) Boolean rentPaymentStatus,
-            @RequestParam(value = "paidLate", required = false) Boolean paidLate
+            @RequestParam(value = "paidLate", required = false) Boolean paidLate,
+            @RequestParam(value = "tenantActive", required = false) Boolean tenantActive
     ) {
-        return buildResponse("rentpayment", pManagerService.getDetailedRentPayments(month, year, roomName, rooms, tenantName, tenantId, rentPaymentStatus, paidLate), "Fetched successfully", HttpStatus.OK);
+        return buildResponse("rentpayment", pManagerService.getDetailedRentPayments(month, year, roomName, rooms, tenantName, tenantId, rentPaymentStatus, paidLate, tenantActive), "Fetched successfully", HttpStatus.OK);
     }
 
     private ResponseEntity<Response> buildResponse(String desc, Object data, String message, HttpStatus status) {

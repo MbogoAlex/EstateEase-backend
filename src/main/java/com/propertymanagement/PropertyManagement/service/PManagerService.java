@@ -25,6 +25,6 @@ public interface PManagerService {
 
     List<RentPaymentDetailsDTO> getRentPaymentDetailedInfo(String month, String year, Integer rooms, String roomName, String tenantName);
 
-    List<DetailedRentPaymentInfoDTO> getDetailedRentPayments(String month, String year, String roomName, Integer rooms, String tenantName, Integer tenantId, Boolean rentPaymentStatus, Boolean paidLate);
+    List<DetailedRentPaymentInfoDTO> getDetailedRentPayments(String month, String year, String roomName, Integer rooms, String tenantName, Integer tenantId, Boolean rentPaymentStatus, Boolean paidLate, Boolean tenantActive);
 
 }

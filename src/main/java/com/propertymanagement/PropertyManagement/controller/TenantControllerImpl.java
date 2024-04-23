@@ -77,7 +77,7 @@ public class TenantControllerImpl implements TenantController{
     @Override
     @PutMapping("/tenant/penalty/deactivate/rentPaymentTblId={rentPaymentTblId}")
     public ResponseEntity<Response> deActivateLatePaymentPenaltyForSingleTenant(@PathVariable("rentPaymentTblId") int rentPaymentTblId) {
-        return buildResponse("rentpaymet", tenantService.deActivateLatePaymentPenaltyForSingleTenant(rentPaymentTblId), "Penalty deactivated", HttpStatus.OK);
+        return buildResponse("rentpayment", tenantService.deActivateLatePaymentPenaltyForSingleTenant(rentPaymentTblId), "Penalty deactivated", HttpStatus.OK);
     }
 
 

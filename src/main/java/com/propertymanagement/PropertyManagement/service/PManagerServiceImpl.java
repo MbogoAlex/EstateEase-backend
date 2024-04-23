@@ -202,9 +202,9 @@ public class PManagerServiceImpl implements PManagerService {
     }
 
     @Override
-    public List<DetailedRentPaymentInfoDTO> getDetailedRentPayments(String month, String year, String roomName, Integer rooms, String tenantName, Integer tenantId, Boolean rentPaymentStatus, Boolean paidLate) {
+    public List<DetailedRentPaymentInfoDTO> getDetailedRentPayments(String month, String year, String roomName, Integer rooms, String tenantName, Integer tenantId, Boolean rentPaymentStatus, Boolean paidLate, Boolean tenantActive) {
 
-        List<DetailedRentPaymentInfoDTO> rentPayments = pManagerDao.getDetailedRentPayments(month, year, roomName, rooms, tenantName, tenantId, rentPaymentStatus, paidLate);
+        List<DetailedRentPaymentInfoDTO> rentPayments = pManagerDao.getDetailedRentPayments(month, year, roomName, rooms, tenantName, tenantId, rentPaymentStatus, paidLate, tenantActive);
         for(DetailedRentPaymentInfoDTO rentPayment : rentPayments) {
             long daysLate;
 
