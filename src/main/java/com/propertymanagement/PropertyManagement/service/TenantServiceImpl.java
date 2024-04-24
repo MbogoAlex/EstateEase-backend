@@ -238,6 +238,7 @@ public class TenantServiceImpl implements TenantService{
         Tenant tenant = tenantDao.getTenantByTenantId(tenantId);
         // set new tenant status
         tenant.setTenantActive(false);
+        tenant.setTenantArchivedAt(LocalDateTime.now());
 
         // get property
         PropertyUnit propertyUnit = propertyUnitDao.getPropertyByPropertyId(propertyId);
@@ -314,6 +315,11 @@ public class TenantServiceImpl implements TenantService{
         }
 
         return rentPaymentDetailsDTOS;
+    }
+
+    @Override
+    public List<DetailedRentPaymentInfoDTO> getRentPaymentRowsByTenantId(Integer tenantId, String month, Integer year, String roomName, Integer rooms, String tenantName, Boolean rentPaymentStatus, Boolean paidLate, Boolean tenantActive) {
+        return tenantDao.getRentPaymentRowsByTenantId(tenantId, month, year, roomName, rooms, tenantName, rentPaymentStatus, paidLate, tenantActive);
     }
 
 

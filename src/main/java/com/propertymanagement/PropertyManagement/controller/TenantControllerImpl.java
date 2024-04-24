@@ -3,6 +3,7 @@ package com.propertymanagement.PropertyManagement.controller;
 import com.propertymanagement.PropertyManagement.dto.*;
 import com.propertymanagement.PropertyManagement.entity.Tenant;
 import com.propertymanagement.PropertyManagement.service.TenantService;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -91,6 +92,21 @@ public class TenantControllerImpl implements TenantController{
     @PutMapping("/tenant/penalty/deactivate/month={month}/year={year}")
     public ResponseEntity<Response> deActivateLatePaymentPenaltyForMultipleTenants(@PathVariable("month") String month, @PathVariable("year") String year) {
         return buildResponse("rentpayment", tenantService.deActivateLatePaymentPenaltyForMultipleTenants(month, year), "Penalty deactivated", HttpStatus.OK);
+    }
+
+    @Override
+    @GetMapping("/tenant/tenantrentpaymentrows")
+    public ResponseEntity<Response> getRentPaymentRowsByTenantId(
+            @RequestParam(value = "tenantId") Integer tenantId,
+            @RequestParam(value = "month", required = false) String month,
+            @RequestParam(value = "year", required = false) Integer year,
+            @RequestParam(value = "roomName", required = false) String roomName,
+            @RequestParam(value = "rooms", required = false) Integer rooms,
+            @RequestParam(value = "tenantName", required = false) String tenantName,
+            @RequestParam(value = "rentPaymentStatus", required = false) Boolean rentPaymentStatus,
+            @RequestParam(value = "paidLate", required = false) Boolean paidLate,
+            @RequestParam(value = "tenantActive", required = false) Boolean tenantActive) {
+        return buildResponse("rentpayment", tenantService.getRentPaymentRowsByTenantId(tenantId, month, year, roomName, rooms, tenantName, rentPaymentStatus, paidLate, tenantActive), "Fetched successfully", HttpStatus.OK);
     }
 
     private ResponseEntity<Response> buildResponse(String desc, Object data, String message, HttpStatus status) {

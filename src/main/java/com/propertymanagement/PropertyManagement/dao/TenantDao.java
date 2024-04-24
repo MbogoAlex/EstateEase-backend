@@ -1,5 +1,7 @@
 package com.propertymanagement.PropertyManagement.dao;
 
+import com.propertymanagement.PropertyManagement.dto.DetailedRentPaymentInfoDTO;
+import com.propertymanagement.PropertyManagement.dto.RentPaymentDetailsDTO;
 import com.propertymanagement.PropertyManagement.entity.RentPayment;
 import com.propertymanagement.PropertyManagement.entity.Tenant;
 import java.util.List;
@@ -40,4 +42,6 @@ public interface TenantDao {
     RentPayment getSingleRentPaymentRow(int rentPaymentTblId);
 
     RentPayment updateRentPaymentRow(RentPayment rentPayment);
+
+    List<DetailedRentPaymentInfoDTO> getRentPaymentRowsByTenantId(Integer tenantId, String month, Integer year, String roomName, Integer rooms, String tenantName, Boolean rentPaymentStatus, Boolean paidLate, Boolean tenantActive);
 }

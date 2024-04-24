@@ -53,4 +53,7 @@ public interface TenantController {
 
     ResponseEntity<Response> deActivateLatePaymentPenaltyForMultipleTenants(String month, String year);
 
+    // get rent payment rows by tenant ID
+    ResponseEntity<Response> getRentPaymentRowsByTenantId(Integer tenantId, String month, Integer year, String roomName, Integer rooms, String tenantName, Boolean rentPaymentStatus, Boolean paidLate, Boolean tenantActive);
+
 }

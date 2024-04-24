@@ -29,6 +29,9 @@ public class Tenant {
     private LocalDateTime tenantAddedAt;
 
     private Boolean tenantActive;
+
+    @Column(name = "tenant_archived_at")
+    private LocalDateTime tenantArchivedAt;
     @JsonManagedReference
     @OneToMany(mappedBy = "tenant", fetch = FetchType.LAZY,
             cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
@@ -161,7 +164,15 @@ public class Tenant {
         this.pManager = pManager;
     }
 
-//    public int getPropertyUnitId() {
+    public LocalDateTime getTenantArchivedAt() {
+        return tenantArchivedAt;
+    }
+
+    public void setTenantArchivedAt(LocalDateTime tenantArchivedAt) {
+        this.tenantArchivedAt = tenantArchivedAt;
+    }
+
+    //    public int getPropertyUnitId() {
 //        return propertyUnitId;
 //    }
 //
