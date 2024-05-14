@@ -1,11 +1,10 @@
 package com.propertymanagement.PropertyManagement.controller;
 
 import com.propertymanagement.PropertyManagement.dto.*;
-import com.propertymanagement.PropertyManagement.entity.RentPayment;
-import com.propertymanagement.PropertyManagement.entity.Tenant;
+import net.sf.jasperreports.engine.JRException;
 import org.springframework.http.ResponseEntity;
 
-import java.util.List;
+import java.io.ByteArrayOutputStream;
 
 public interface TenantController {
     // add new tenant
@@ -54,6 +53,9 @@ public interface TenantController {
     ResponseEntity<Response> deActivateLatePaymentPenaltyForMultipleTenants(String month, String year);
 
     // get rent payment rows by tenant ID
-    ResponseEntity<Response> getRentPaymentRowsByTenantId(Integer tenantId, String month, Integer year, String roomName, Integer rooms, String tenantName, Boolean rentPaymentStatus, Boolean paidLate, Boolean tenantActive);
+    ResponseEntity<Response> getRentPaymentRowsByTenantId(Integer tenantId, String month, Integer year, String roomName, Integer rooms, String tenantName, Boolean rentPaymentStatus, Boolean paidLate, Boolean tenantActive) throws JRException;
+
+    // generate rent payments report
+    ResponseEntity<Response> generateRentPaymentsReport(Integer tenantId, String month, Integer year, String roomName, Integer rooms, String tenantName, Boolean rentPaymentStatus, Boolean paidLate, Boolean tenantActive) throws JRException;
 
 }

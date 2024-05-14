@@ -3,11 +3,15 @@ package com.propertymanagement.PropertyManagement.controller;
 import com.propertymanagement.PropertyManagement.dto.*;
 import com.propertymanagement.PropertyManagement.entity.Tenant;
 import com.propertymanagement.PropertyManagement.service.TenantService;
+import net.sf.jasperreports.engine.JRException;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.ByteArrayOutputStream;
 import java.time.LocalDateTime;
 
 import static java.util.Map.of;
@@ -95,7 +99,7 @@ public class TenantControllerImpl implements TenantController{
     }
 
     @Override
-    @GetMapping("/tenant/tenantrentpaymentrows")
+    @GetMapping("/tenant/tenantrentpaymentrow")
     public ResponseEntity<Response> getRentPaymentRowsByTenantId(
             @RequestParam(value = "tenantId") Integer tenantId,
             @RequestParam(value = "month", required = false) String month,
@@ -105,8 +109,27 @@ public class TenantControllerImpl implements TenantController{
             @RequestParam(value = "tenantName", required = false) String tenantName,
             @RequestParam(value = "rentPaymentStatus", required = false) Boolean rentPaymentStatus,
             @RequestParam(value = "paidLate", required = false) Boolean paidLate,
-            @RequestParam(value = "tenantActive", required = false) Boolean tenantActive) {
+            @RequestParam(value = "tenantActive", required = false) Boolean tenantActive) throws JRException {
         return buildResponse("rentpayment", tenantService.getRentPaymentRowsByTenantId(tenantId, month, year, roomName, rooms, tenantName, rentPaymentStatus, paidLate, tenantActive), "Fetched successfully", HttpStatus.OK);
+    }
+
+    @Override
+    @GetMapping("/tenant/rentpaymentsreport")
+    public ResponseEntity<Response> generateRentPaymentsReport(
+            @RequestParam(value = "tenantId") Integer tenantId,
+            @RequestParam(value = "month", required = false) String month,
+            @RequestParam(value = "year", required = false) Integer year,
+            @RequestParam(value = "roomName", required = false) String roomName,
+            @RequestParam(value = "rooms", required = false) Integer rooms,
+            @RequestParam(value = "tenantName", required = false) String tenantName,
+            @RequestParam(value = "rentPaymentStatus", required = false) Boolean rentPaymentStatus,
+            @RequestParam(value = "paidLate", required = false) Boolean paidLate,
+            @RequestParam(value = "tenantActive", required = false) Boolean tenantActive
+    ) throws JRException {
+        ByteArrayOutputStream reportStream = tenantService.generateRentPaymentsReport(tenantId, month, year, roomName, rooms, tenantName, rentPaymentStatus, paidLate, tenantActive);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_PDF);
+        return new ResponseEntity(reportStream.toByteArray(), httpHeaders, HttpStatus.OK);
     }
 
     private ResponseEntity<Response> buildResponse(String desc, Object data, String message, HttpStatus status) {

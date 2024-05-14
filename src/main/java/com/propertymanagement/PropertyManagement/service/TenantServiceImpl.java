@@ -8,21 +8,29 @@ import com.propertymanagement.PropertyManagement.dto.tenantResponse.TenantProper
 import com.propertymanagement.PropertyManagement.dto.tenantResponse.TenantResponseDTO;
 import com.propertymanagement.PropertyManagement.entity.*;
 import com.propertymanagement.PropertyManagement.exception.DataNotFoundException;
+import com.propertymanagement.PropertyManagement.models.RentPaymentReport;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.export.JRPdfExporter;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
+import net.sf.jasperreports.export.SimplePdfExporterConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.ByteArrayOutputStream;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.Year;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
+
 @Service
 public class TenantServiceImpl implements TenantService{
 
@@ -319,7 +327,88 @@ public class TenantServiceImpl implements TenantService{
 
     @Override
     public List<DetailedRentPaymentInfoDTO> getRentPaymentRowsByTenantId(Integer tenantId, String month, Integer year, String roomName, Integer rooms, String tenantName, Boolean rentPaymentStatus, Boolean paidLate, Boolean tenantActive) {
-        return tenantDao.getRentPaymentRowsByTenantId(tenantId, month, year, roomName, rooms, tenantName, rentPaymentStatus, paidLate, tenantActive);
+        List<DetailedRentPaymentInfoDTO> rentPayments = tenantDao.getRentPaymentRowsByTenantId(tenantId, month, year, roomName, rooms, tenantName, rentPaymentStatus, paidLate, tenantActive);
+        for(DetailedRentPaymentInfoDTO rentPayment : rentPayments) {
+            long daysLate;
+
+            if(!rentPayment.getRentPaymentStatus() && ChronoUnit.DAYS.between(rentPayment.getDueDate(), LocalDateTime.now()) > 0) {
+                daysLate = ChronoUnit.DAYS.between(rentPayment.getDueDate(), LocalDateTime.now());
+            } else if (rentPayment.getRentPaymentStatus() && ChronoUnit.DAYS.between(rentPayment.getDueDate(), rentPayment.getPaidAt()) > 0) {
+                daysLate = ChronoUnit.DAYS.between(rentPayment.getDueDate(), rentPayment.getPaidAt());
+            } else {
+                daysLate = 0;
+            }
+            rentPayment.setDaysLate(daysLate);
+        }
+
+        return rentPayments;
+    }
+
+    @Override
+    public ByteArrayOutputStream generateRentPaymentsReport(Integer tenantId, String month, Integer year, String roomName, Integer rooms, String tenantName, Boolean rentPaymentStatus, Boolean paidLate, Boolean tenantActive) throws JRException {
+        List<DetailedRentPaymentInfoDTO> rentPayments = tenantDao.getRentPaymentRowsByTenantId(tenantId, month, year, roomName, rooms, tenantName, rentPaymentStatus, paidLate, tenantActive);
+        for(DetailedRentPaymentInfoDTO rentPayment : rentPayments) {
+            long daysLate;
+
+            if(!rentPayment.getRentPaymentStatus() && ChronoUnit.DAYS.between(rentPayment.getDueDate(), LocalDateTime.now()) > 0) {
+                daysLate = ChronoUnit.DAYS.between(rentPayment.getDueDate(), LocalDateTime.now());
+            } else if (rentPayment.getRentPaymentStatus() && ChronoUnit.DAYS.between(rentPayment.getDueDate(), rentPayment.getPaidAt()) > 0) {
+                daysLate = ChronoUnit.DAYS.between(rentPayment.getDueDate(), rentPayment.getPaidAt());
+            } else {
+                daysLate = 0;
+            }
+            rentPayment.setDaysLate(daysLate);
+        }
+
+        DecimalFormat formatter= new DecimalFormat("Ksh #,##0.00");
+        List<RentPaymentReport> rentPaymentReport = new ArrayList<>();
+        for(DetailedRentPaymentInfoDTO rentPayment : rentPayments) {
+
+            String formattedRent = formatter.format(rentPayment.getMonthlyRent());
+            String formattedPenalty = formatter.format(rentPayment.getPenaltyPerDay());
+            String formattedTotalPaid = formatter.format(rentPayment.getPaidAmount());
+            String paidAt = rentPayment.getPaidAt().toString();
+            String[] paidAtParts = paidAt.split("T");
+            String formattedPaidAt = paidAtParts[0];
+
+            RentPaymentReport paymentReport = new RentPaymentReport();
+            paymentReport.setYear(rentPayment.getYear().toString());
+            paymentReport.setMonth(rentPayment.getMonth().toString());
+            paymentReport.setMonthlyRent(formattedRent);
+            paymentReport.setDueDate(rentPayment.getDueDate().toString());
+            if(rentPayment.getPenaltyActive()) {
+                paymentReport.setPenaltyStatus("Active");
+            } else {
+                paymentReport.setPenaltyStatus("Inactive");
+            }
+            paymentReport.setPenalty(rentPayment.getDaysLate()+"day(s) * "+formattedPenalty);
+            paymentReport.setPaidAmount(formattedTotalPaid);
+            paymentReport.setPaidAt(formattedPaidAt);
+            rentPaymentReport.add(paymentReport);
+        }
+
+        JRBeanCollectionDataSource rentPaymentsDataSource = new JRBeanCollectionDataSource(rentPaymentReport);
+
+        String filePath = "/home/mbogo/dev-spring-boot/pManger-project/PropertyManagement/src/main/resources/templates/RentPaymentsReport.jrxml";
+
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("tenantName", rentPayments.get(0).getFullName());
+        parameters.put("roomName", rentPayments.get(0).getPropertyNumberOrName());
+        parameters.put("rentPaymentsDataset", rentPaymentsDataSource);
+
+        JasperReport report = JasperCompileManager.compileReport(filePath);
+        JasperPrint print = JasperFillManager.fillReport(report, parameters, new JREmptyDataSource());
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        JRPdfExporter exporter = new JRPdfExporter();
+        SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
+        configuration.setCompressed(true);
+        exporter.setConfiguration(configuration);
+        exporter.setExporterInput(new SimpleExporterInput(print));
+        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(byteArrayOutputStream));
+        exporter.exportReport();
+
+        return byteArrayOutputStream;
     }
 
 

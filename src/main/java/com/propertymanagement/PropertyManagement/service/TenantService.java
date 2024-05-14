@@ -4,6 +4,9 @@ import com.propertymanagement.PropertyManagement.dto.*;
 import com.propertymanagement.PropertyManagement.dto.tenantResponse.TenantResponseDTO;
 import com.propertymanagement.PropertyManagement.entity.RentPayment;
 import com.propertymanagement.PropertyManagement.entity.Tenant;
+import net.sf.jasperreports.engine.JRException;
+
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 public interface TenantService {
@@ -41,4 +44,6 @@ public interface TenantService {
     List<RentPaymentDetailsDTO> deActivateLatePaymentPenaltyForMultipleTenants(String month, String year);
 
     List<DetailedRentPaymentInfoDTO> getRentPaymentRowsByTenantId(Integer tenantId, String month, Integer year, String roomName, Integer rooms, String tenantName, Boolean rentPaymentStatus, Boolean paidLate, Boolean tenantActive);
+
+    ByteArrayOutputStream generateRentPaymentsReport(Integer tenantId, String month, Integer year, String roomName, Integer rooms, String tenantName, Boolean rentPaymentStatus, Boolean paidLate, Boolean tenantActive) throws JRException;
 }
