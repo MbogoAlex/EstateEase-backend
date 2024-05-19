@@ -4,6 +4,9 @@ import com.propertymanagement.PropertyManagement.dto.*;
 import com.propertymanagement.PropertyManagement.dto.pManagerResponse.PManagerResponseDTO;
 import com.propertymanagement.PropertyManagement.entity.PManager;
 import com.propertymanagement.PropertyManagement.entity.RentPayment;
+import net.sf.jasperreports.engine.JRException;
+
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 public interface PManagerService {
@@ -26,5 +29,7 @@ public interface PManagerService {
     List<RentPaymentDetailsDTO> getRentPaymentDetailedInfo(String month, String year, Integer rooms, String roomName, String tenantName);
 
     List<DetailedRentPaymentInfoDTO> getDetailedRentPayments(String month, String year, String roomName, Integer rooms, String tenantName, Integer tenantId, Boolean rentPaymentStatus, Boolean paidLate, Boolean tenantActive);
+
+    ByteArrayOutputStream generateGeneralRentPaymentsReport(String month, String year, String roomName, Integer rooms, String tenantName, Integer tenantId, Boolean rentPaymentStatus, Boolean paidLate, Boolean tenantActive) throws JRException;
 
 }

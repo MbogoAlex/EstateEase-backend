@@ -6,18 +6,24 @@ import com.propertymanagement.PropertyManagement.dto.pManagerResponse.PManagerRe
 import com.propertymanagement.PropertyManagement.dto.propertyResponse.PropertyTenantDTO;
 import com.propertymanagement.PropertyManagement.dto.tenantResponse.TenantPropertyDTO;
 import com.propertymanagement.PropertyManagement.entity.*;
+import com.propertymanagement.PropertyManagement.reportModels.GeneralReport;
+import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.export.JRPdfExporter;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
+import net.sf.jasperreports.export.SimplePdfExporterConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.ByteArrayOutputStream;
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.Year;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class PManagerServiceImpl implements PManagerService {
@@ -127,11 +133,7 @@ public class PManagerServiceImpl implements PManagerService {
 
     @Override
     public List<RentPaymentDetailsDTO> getRentPaymentDetailedInfo(String month, String year, Integer rooms, String roomName, String tenantName) {
-        System.out.println("MONTH: "+month);
-        System.out.println("YEAR: "+year);
-        System.out.println("ROOMS: "+rooms);
-        System.out.println("ROOMNAME: "+roomName);
-        System.out.println("TENANTNAME: "+tenantName);
+
         List<RentPaymentDetailsDTO> rentPaymentsDTO = new ArrayList<>();
         List<RentPayment> rentPayments = pManagerDao.getRentPaymentOverview(month, year);
 
@@ -222,6 +224,129 @@ public class PManagerServiceImpl implements PManagerService {
         return rentPayments;
     }
 
+    @Override
+    public ByteArrayOutputStream generateGeneralRentPaymentsReport(String month, String year, String roomName, Integer rooms, String tenantName, Integer tenantId, Boolean rentPaymentStatus, Boolean paidLate, Boolean tenantActive) throws JRException {
+        System.out.println("GENERATING REPORT");
+        DecimalFormat formatter= new DecimalFormat("Ksh #,##0.00");
+        Double totalExpectedRent = 0.0;
+        Double paidAmount = 0.0;
+        int clearedUnits = 0;
+
+//        List<RentPayment> rentPayments = pManagerDao.getRentPaymentOverview(month, year);
+        List<DetailedRentPaymentInfoDTO> detailedRentPaymentInfoDTOS = pManagerDao.getDetailedRentPayments(month, year, roomName, rooms, tenantName, tenantId, rentPaymentStatus, paidLate, tenantActive);
+
+        int totalUnits = detailedRentPaymentInfoDTOS.size();
+
+        Double deficit = totalExpectedRent - paidAmount;
+        int unclearedUnits = totalUnits - clearedUnits;
+
+
+        List<GeneralReport> generalReport = new ArrayList<>();
+        for(DetailedRentPaymentInfoDTO rentPaymentDetailsDTO : detailedRentPaymentInfoDTOS) {
+            totalExpectedRent = totalExpectedRent + rentPaymentDetailsDTO.getMonthlyRent();
+
+            if(rentPaymentDetailsDTO.getRentPaymentStatus()) {
+                paidAmount = paidAmount + rentPaymentDetailsDTO.getPaidAmount();
+                clearedUnits = clearedUnits + 1;
+            }
+            System.out.println("CLEARED STAGE ONE");
+
+            long daysLate;
+
+            if(!rentPaymentDetailsDTO.getRentPaymentStatus() && ChronoUnit.DAYS.between(rentPaymentDetailsDTO.getDueDate(), LocalDateTime.now()) > 0) {
+                daysLate = ChronoUnit.DAYS.between(rentPaymentDetailsDTO.getDueDate(), LocalDateTime.now());
+            } else if (rentPaymentDetailsDTO.getRentPaymentStatus() && ChronoUnit.DAYS.between(rentPaymentDetailsDTO.getDueDate(), rentPaymentDetailsDTO.getPaidAt()) > 0) {
+                daysLate = ChronoUnit.DAYS.between(rentPaymentDetailsDTO.getDueDate(), rentPaymentDetailsDTO.getPaidAt());
+            } else {
+                daysLate = 0;
+            }
+            rentPaymentDetailsDTO.setDaysLate(daysLate);
+
+            GeneralReport report = new GeneralReport();
+
+            String formattedRent = "";
+            String formattedPenalty = "";
+            String formattedPayableAmount = "";
+            String rentPaidAt = "";
+            String formattedPaidAt = "";
+
+            if(rentPaymentDetailsDTO.getRentPaymentStatus()) {
+                formattedRent = formatter.format(rentPaymentDetailsDTO.getMonthlyRent());
+                formattedPenalty = formatter.format(rentPaymentDetailsDTO.getPenaltyPerDay());
+                formattedPayableAmount = formatter.format(rentPaymentDetailsDTO.getPaidAmount());
+                rentPaidAt = rentPaymentDetailsDTO.getPaidAt().toString();
+                String[] paidAtParts = rentPaidAt.split("T");
+                formattedPaidAt = paidAtParts[0];
+            } else {
+                formattedRent = formatter.format(rentPaymentDetailsDTO.getMonthlyRent());
+                formattedPenalty = formatter.format(rentPaymentDetailsDTO.getPenaltyPerDay());
+                if(rentPaymentDetailsDTO.getPenaltyActive()) {
+                    if(daysLate > 0) {
+                        formattedPayableAmount = formatter.format(rentPaymentDetailsDTO.getMonthlyRent() + (daysLate * rentPaymentDetailsDTO.getPenaltyPerDay()));
+                    } else {
+                        formattedPayableAmount = formattedRent;
+                    }
+                } else {
+                    formattedPayableAmount = formattedRent;
+                }
+                formattedPaidAt = "#";
+            }
+
+
+
+
+            System.out.println("CLEARED STAGE TWO");
+
+            report.setTenantName(rentPaymentDetailsDTO.getFullName());
+            report.setTenantPhoneNo(rentPaymentDetailsDTO.getPhoneNumber());
+            report.setRoom(rentPaymentDetailsDTO.getPropertyNumberOrName());
+            report.setRooms(rentPaymentDetailsDTO.getNumberOfRooms().toString());
+            report.setRent(formattedRent);
+            report.setDueDate(rentPaymentDetailsDTO.getDueDate().toString());
+            if(rentPaymentDetailsDTO.getRentPaymentStatus()) {
+                report.setPaymentStatus("PAID");
+            } else {
+                report.setPaymentStatus("UNPAID");
+            }
+            report.setPenalty(rentPaymentDetailsDTO.getDaysLate()+" days * "+formattedPenalty);
+            System.out.println("CLEARED STAGE THREE");
+            report.setPayableAmount(formattedPayableAmount);
+            System.out.println("CLEARED STAGE FOUR");
+            report.setPaidAt(formattedPaidAt);
+            System.out.println();
+            generalReport.add(report);
+        }
+
+        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(generalReport);
+        String filePath = "/home/mbogo/dev-spring-boot/pManger-project/PropertyManagement/src/main/resources/templates/GeneralReport.jrxml";
+
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("month", month);
+        parameters.put("year", year);
+        parameters.put("totalUnits", totalUnits);
+        parameters.put("totalExpectedRent", formatter.format(totalExpectedRent));
+        parameters.put("paidAmount", formatter.format(paidAmount));
+        parameters.put("deficit", formatter.format(deficit));
+        parameters.put("clearedUnits", clearedUnits);
+        parameters.put("unclearedUnits", unclearedUnits);
+        parameters.put("rentPaymentDataset", dataSource);
+
+        JasperReport report = JasperCompileManager.compileReport(filePath);
+        JasperPrint print = JasperFillManager.fillReport(report, parameters, new JREmptyDataSource());
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        JRPdfExporter exporter = new JRPdfExporter();
+        SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
+        configuration.setCompressed(true);
+        exporter.setConfiguration(configuration);
+        exporter.setExporterInput(new SimpleExporterInput(print));
+        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(byteArrayOutputStream));
+        exporter.exportReport();
+
+
+        return byteArrayOutputStream;
+    }
+
 
     PManagerResponseDTO mapPManagerToPManagerResponseDTO(PManager pManager) {
         PManagerResponseDTO pManagerResponseDTO = new PManagerResponseDTO();
@@ -270,6 +395,7 @@ public class PManagerServiceImpl implements PManagerService {
         rentPaymentDetailsDTO.setPaidAt(rentPayment.getPaidAt());
         rentPaymentDetailsDTO.setPaidLate(rentPayment.getPaidLate());
         rentPaymentDetailsDTO.setUnitName(rentPayment.getTenant().getPropertyUnit().getPropertyNumberOrName());
+        rentPaymentDetailsDTO.setNumberOfRooms(rentPayment.getTenant().getPropertyUnit().getNumberOfRooms());
         tenantDataDTO.setTenantId(rentPayment.getTenant().getTenantId());
         tenantDataDTO.setFullName(rentPayment.getTenant().getFullName());
         tenantDataDTO.setNationalIdOrPassportNumber(rentPayment.getTenant().getNationalIdOrPassportNumber());

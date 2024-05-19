@@ -1,4 +1,4 @@
-package com.propertymanagement.PropertyManagement.models;
+package com.propertymanagement.PropertyManagement.reportModels;
 
 import lombok.*;
 

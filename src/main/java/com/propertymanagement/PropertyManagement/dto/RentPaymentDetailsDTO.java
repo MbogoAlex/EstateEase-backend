@@ -28,6 +28,7 @@ public class RentPaymentDetailsDTO {
     private Boolean paidLate;
     private TenantDataDTO tenant;
     private String unitName;
+    private int numberOfRooms;
 
     @Setter
 

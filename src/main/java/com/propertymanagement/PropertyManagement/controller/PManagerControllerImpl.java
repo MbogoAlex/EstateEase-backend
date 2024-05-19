@@ -8,11 +8,15 @@ import com.propertymanagement.PropertyManagement.entity.PManager;
 import com.propertymanagement.PropertyManagement.entity.Role;
 import com.propertymanagement.PropertyManagement.service.PManagerService;
 import com.propertymanagement.PropertyManagement.service.PManagerServiceImpl;
+import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.ByteArrayOutputStream;
 import java.time.LocalDateTime;
 
 import static java.util.Map.of;
@@ -97,6 +101,25 @@ public class PManagerControllerImpl implements PManagerController {
             @RequestParam(value = "tenantActive", required = false) Boolean tenantActive
     ) {
         return buildResponse("rentpayment", pManagerService.getDetailedRentPayments(month, year, roomName, rooms, tenantName, tenantId, rentPaymentStatus, paidLate, tenantActive), "Fetched successfully", HttpStatus.OK);
+    }
+
+    @Override
+    @GetMapping("rentpayment/generalreport")
+    public ResponseEntity<Response> generateGeneralRentPaymentsReport(
+            @RequestParam(value = "month", required = false) String month,
+            @RequestParam(value = "year", required = false) String year,
+            @RequestParam(value = "roomName", required = false) String roomName,
+            @RequestParam(value = "rooms", required = false) Integer rooms,
+            @RequestParam(value = "tenantName", required = false) String tenantName,
+            @RequestParam(value = "tenantId", required = false) Integer tenantId,
+            @RequestParam(value = "rentPaymentStatus", required = false) Boolean rentPaymentStatus,
+            @RequestParam(value = "paidLate", required = false) Boolean paidLate,
+            @RequestParam(value = "tenantActive", required = false) Boolean tenantActive
+    ) throws JRException {
+        ByteArrayOutputStream reportStream = pManagerService.generateGeneralRentPaymentsReport(month, year, roomName, rooms, tenantName, tenantId, rentPaymentStatus, paidLate, tenantActive);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_PDF);
+        return new ResponseEntity(reportStream.toByteArray(), httpHeaders, HttpStatus.OK);
     }
 
     private ResponseEntity<Response> buildResponse(String desc, Object data, String message, HttpStatus status) {
