@@ -2,6 +2,7 @@ package com.propertymanagement.PropertyManagement.dto.tenantResponse;
 
 import com.propertymanagement.PropertyManagement.dto.RentPaymentDTO;
 import com.propertymanagement.PropertyManagement.dto.RentPaymentDetailsDTO;
+import com.propertymanagement.PropertyManagement.dto.WaterMeterDataDTO;
 import com.propertymanagement.PropertyManagement.entity.RentPayment;
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -29,6 +29,7 @@ public class RentPaymentDetailsDTO {
     private TenantDataDTO tenant;
     private String unitName;
     private int numberOfRooms;
+    private WaterMeterDataDTO waterMeterDataDTO;
 
     @Setter
 

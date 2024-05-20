@@ -149,18 +149,24 @@ public class PManagerDaoImpl implements PManagerDao {
                 "t.nationalIdOrPassportNumber, " +
                 "t.phoneNumber, " +
                 "t.tenantAddedAt, " +
-                "t.tenantActive) " +
+                "t.tenantActive, " +
+                "wmd.waterUnits, " +
+                "wmd.pricePerUnit, " +
+                "wmd.meterReadingDate, " +
+                "wmi.name)" +
                 "from RentPayment rp " +
                 "join rp.tenant t " +
                 "join t.propertyUnit pu " +
+                "left join rp.waterMeterData wmd " +
+                "left join wmd.waterMeterImage wmi " +
                 "where MONTHNAME(rp.dueDate) = :month " +
                 "and YEAR(rp.dueDate) = :year " +
                 "and (:tenantName is null or t.fullName like concat('%', :tenantName, '%')) " +
-                "and (:tenantId is null or t.tenantId = :tenantId)" +
+                "and (:tenantId is null or t.tenantId = :tenantId) " +
                 "and (:numberOfRooms is null or pu.numberOfRooms = :numberOfRooms) " +
                 "and (:propertyNumberOrName is null or pu.propertyNumberOrName like concat('%', :propertyNumberOrName, '%')) " +
-                "and (:rentPaymentStatus is null or rp.paymentStatus = :rentPaymentStatus)" +
-                "and (:paidLate is null or rp.paidLate = :paidLate)" +
+                "and (:rentPaymentStatus is null or rp.paymentStatus = :rentPaymentStatus) " +
+                "and (:paidLate is null or rp.paidLate = :paidLate) " +
                 "and (:tenantActive is null or t.tenantActive = :tenantActive)";
 
         TypedQuery<DetailedRentPaymentInfoDTO> query = entityManager.createQuery(stringQuery, DetailedRentPaymentInfoDTO.class);
@@ -176,4 +182,5 @@ public class PManagerDaoImpl implements PManagerDao {
 
         return query.getResultList();
     }
+
 }

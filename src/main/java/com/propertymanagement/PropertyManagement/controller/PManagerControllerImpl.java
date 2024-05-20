@@ -76,7 +76,6 @@ public class PManagerControllerImpl implements PManagerController {
         return buildResponse("rentpayment", pManagerService.getRentPaymentOverview(month, year), "Fetched successfully", HttpStatus.OK);
     }
     @GetMapping("rentpaymen/detailed")
-
     @Override
     public ResponseEntity<Response> getRentPaymentDetailedInfo(
             @RequestParam(value = "month") String month,

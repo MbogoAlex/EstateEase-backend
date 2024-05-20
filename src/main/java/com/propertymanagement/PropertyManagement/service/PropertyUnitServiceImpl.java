@@ -5,12 +5,10 @@ import com.propertymanagement.PropertyManagement.dao.PropertyUnitDao;
 import com.propertymanagement.PropertyManagement.dao.TenantDao;
 import com.propertymanagement.PropertyManagement.dto.PropertyUnitDTO;
 import com.propertymanagement.PropertyManagement.dto.RentPaymentOverviewDTO;
+import com.propertymanagement.PropertyManagement.dto.WaterMeterDataDTO;
 import com.propertymanagement.PropertyManagement.dto.propertyResponse.PropertyTenantDTO;
 import com.propertymanagement.PropertyManagement.dto.propertyResponse.PropertyUnitResponseDTO;
-import com.propertymanagement.PropertyManagement.entity.PManager;
-import com.propertymanagement.PropertyManagement.entity.PropertyUnit;
-import com.propertymanagement.PropertyManagement.entity.RentPayment;
-import com.propertymanagement.PropertyManagement.entity.Tenant;
+import com.propertymanagement.PropertyManagement.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -198,6 +196,17 @@ public class PropertyUnitServiceImpl implements PropertyUnitService{
             propertyTenant.setPhoneNumber(tenant.getPhoneNumber());
             propertyTenant.setTenantActive(tenant.getTenantActive());
             propertyUnitResponseDTO.getTenants().add(propertyTenant);
+
+        }
+        for(WaterMeterData waterMeterData : propertyUnit.getWaterMeterData()) {
+            for(Tenant tenant : waterMeterData.getPropertyUnit().getTenants()) {
+                WaterMeterDataDTO waterMeterDataDTO = new WaterMeterDataDTO();
+                waterMeterDataDTO.setPropertyName(waterMeterData.getPropertyUnit().getPropertyNumberOrName());
+                waterMeterDataDTO.setTenantName(tenant.getFullName());
+                waterMeterDataDTO.setWaterUnits(waterMeterData.getWaterUnits());
+                waterMeterDataDTO.setMeterReadingDate(waterMeterData.getMeterReadingDate());
+                waterMeterDataDTO.setImageName(waterMeterData.getWaterMeterImage().getName());
+            }
 
         }
         return propertyUnitResponseDTO;

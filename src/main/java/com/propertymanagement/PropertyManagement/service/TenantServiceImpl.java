@@ -1,5 +1,6 @@
 package com.propertymanagement.PropertyManagement.service;
 
+import com.propertymanagement.PropertyManagement.dao.MeterReadingDao;
 import com.propertymanagement.PropertyManagement.dao.PManagerDao;
 import com.propertymanagement.PropertyManagement.dao.PropertyUnitDao;
 import com.propertymanagement.PropertyManagement.dao.TenantDao;
@@ -33,15 +34,18 @@ public class TenantServiceImpl implements TenantService{
     private PManagerDao pmAppDao;
     private TenantDao tenantDao;
     private PropertyUnitDao propertyUnitDao;
+    private MeterReadingDao meterReadingDao;
     @Autowired
     public TenantServiceImpl(
             PManagerDao pmAppDao,
             TenantDao tenantDao,
-            PropertyUnitDao propertyUnitDao
+            PropertyUnitDao propertyUnitDao,
+            MeterReadingDao meterReadingDao
     ) {
         this.pmAppDao = pmAppDao;
         this.tenantDao = tenantDao;
         this.propertyUnitDao = propertyUnitDao;
+        this.meterReadingDao = meterReadingDao;
     }
     @Transactional
     @Override
@@ -219,6 +223,9 @@ public class TenantServiceImpl implements TenantService{
     public RentPaymentDetailsDTO payRent(RentPaymentRequestDTO rentPaymentRequestDTO, int rentPaymentTblId) {
         Random random = new Random();
         RentPayment rentPayment = tenantDao.getRentPaymentRow(rentPaymentTblId);
+        WaterMeterData waterMeterData = meterReadingDao.getMeterWaterReadingById(rentPaymentRequestDTO.getWaterMeterDataTableId());
+        waterMeterData.setPaid(true);
+        rentPayment.setWaterMeterData(waterMeterData);
         if(!rentPayment.getPaymentStatus()) {
             rentPayment.setTransactionId(String.valueOf(random.nextInt()));
             rentPayment.setPaidAmount(rentPaymentRequestDTO.getPayableAmount());
@@ -464,6 +471,7 @@ public class TenantServiceImpl implements TenantService{
         tenantPropertyDTO.setPropertyDescription(tenant.getPropertyUnit().getPropertyDescription());
         tenantPropertyDTO.setMonthlyRent(tenant.getPropertyUnit().getMonthlyRent());
 
+
         // assign unit to tenant
         tenantResponseDTO.setPropertyUnit(tenantPropertyDTO);
 
@@ -507,6 +515,18 @@ public class TenantServiceImpl implements TenantService{
         rentPaymentDetailsDTO.setDaysLate(daysLate);
 
         rentPaymentDetailsDTO.setTenant(tenantDataDTO);
+
+
+        for(WaterMeterData waterMeterData : rentPayment.getTenant().getPropertyUnit().getWaterMeterData()) {
+            WaterMeterDataDTO waterMeterDataDTO = new WaterMeterDataDTO();
+            waterMeterDataDTO.setPropertyName(waterMeterData.getPropertyUnit().getPropertyNumberOrName());
+            waterMeterDataDTO.setTenantName(rentPayment.getTenant().getFullName());
+            waterMeterDataDTO.setWaterUnits(waterMeterData.getWaterUnits());
+            waterMeterDataDTO.setMeterReadingDate(waterMeterData.getMeterReadingDate());
+            waterMeterDataDTO.setImageName(waterMeterData.getWaterMeterImage().getName());
+            rentPaymentDetailsDTO.setWaterMeterDataDTO(waterMeterDataDTO);
+        }
+
 
         return rentPaymentDetailsDTO;
     }

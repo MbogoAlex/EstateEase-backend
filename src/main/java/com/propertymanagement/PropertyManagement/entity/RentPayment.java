@@ -56,4 +56,8 @@ public class RentPayment {
     @Column(name = "unit_id")
     private int unitId;
 
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
+    @JoinColumn(name = "water_meter_data_ref_id")
+    private WaterMeterData waterMeterData;
+
 }

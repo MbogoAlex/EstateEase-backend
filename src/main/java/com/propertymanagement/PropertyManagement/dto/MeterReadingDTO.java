@@ -3,11 +3,12 @@ package com.propertymanagement.PropertyManagement.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
+import org.springframework.web.multipart.MultipartFile;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RentPaymentRequestDTO {
-    private Double payableAmount;
-    private int waterMeterDataTableId;
+public class MeterReadingDTO {
+    private int propertyId;
+    private int tenantId;
+    private double waterUnits;
 }
