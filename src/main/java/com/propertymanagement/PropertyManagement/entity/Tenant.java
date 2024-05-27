@@ -51,6 +51,9 @@ public class Tenant {
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
     @JoinColumn(name = "pmanager_id")
     private PManager pManager;
+    @OneToMany(mappedBy = "tenant", fetch = FetchType.LAZY,
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
+    private List<WaterMeterData> waterMeterDataList = new ArrayList<>();
 
 //    @Column(name = "property_unit_id")
 //    private int propertyUnitId;
@@ -84,6 +87,14 @@ public class Tenant {
 
     public String getFullName() {
         return fullName;
+    }
+
+    public List<WaterMeterData> getWaterMeterDataList() {
+        return waterMeterDataList;
+    }
+
+    public void setWaterMeterDataList(List<WaterMeterData> waterMeterDataList) {
+        this.waterMeterDataList = waterMeterDataList;
     }
 
     public void setFullName(String fullName) {

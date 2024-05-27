@@ -24,5 +24,9 @@ public class TenantDTO {
 
     private Double penaltyPerDay;
 
+    class PManagerDTO {
+
+    }
+
 }
 

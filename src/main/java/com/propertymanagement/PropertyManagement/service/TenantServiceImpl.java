@@ -266,14 +266,13 @@ public class TenantServiceImpl implements TenantService{
 
     @Override
     public TenantResponseDTO tenantLogin(TenantLoginDTO tenantLoginDTO) {
-        String roomNumberOrName = tenantLoginDTO.getTenantRoomNameOrNumber();
-        String tenantPassword = tenantLoginDTO.getTenantPassword();
         String phoneNumber = tenantLoginDTO.getTenantPhoneNumber();
+        String tenantPassword = tenantLoginDTO.getTenantPassword();
 
-        // fetch tenant by password and phone number
-        Tenant tenant = tenantDao.fetchTenantByPasswordAndPhoneNumber(tenantPassword, phoneNumber);
+        // fetch tenant by phone number and password
+        Tenant tenant = tenantDao.fetchTenantByPhoneNumberAndPassword(phoneNumber, tenantPassword);
 
-        if(tenant.getPropertyUnit().getPropertyNumberOrName().equals(roomNumberOrName)) {
+        if(tenant.getTenantActive()) {
             return mapTenantToTenantResponseDTO(tenant);
         } else {
             throw new DataNotFoundException("Invalid credentials");

@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @Repository
 public class MeterReadingDaoImpl implements MeterReadingDao{
     private EntityManager entityManager;
@@ -26,6 +28,15 @@ public class MeterReadingDaoImpl implements MeterReadingDao{
     public WaterMeterData getMeterWaterReadingById(int id) {
         TypedQuery<WaterMeterData> query = entityManager.createQuery("from WaterMeterData where id = :id", WaterMeterData.class);
         return query.getSingleResult();
+    }
+
+    @Override
+    public List<WaterMeterData> getMeterWaterReadings(String month, String year, Boolean meterReadingTaken) {
+        TypedQuery<WaterMeterData> query = entityManager.createQuery("from WaterMeterData where month = :month and year = :year and meterReadingTaken = :meterReadingTaken", WaterMeterData.class);
+        query.setParameter("month", month);
+        query.setParameter("year", year);
+        query.setParameter("meterReadingTaken", meterReadingTaken);
+        return query.getResultList();
     }
 
     @Override

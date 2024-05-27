@@ -6,6 +6,7 @@ import com.propertymanagement.PropertyManagement.dto.pManagerResponse.PManagerRe
 import com.propertymanagement.PropertyManagement.dto.propertyResponse.PropertyTenantDTO;
 import com.propertymanagement.PropertyManagement.dto.tenantResponse.TenantPropertyDTO;
 import com.propertymanagement.PropertyManagement.entity.*;
+import com.propertymanagement.PropertyManagement.exception.DataNotFoundException;
 import com.propertymanagement.PropertyManagement.reportModels.GeneralReport;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
@@ -20,8 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.ByteArrayOutputStream;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
-import java.time.Month;
-import java.time.Year;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
@@ -94,11 +93,16 @@ public class PManagerServiceImpl implements PManagerService {
 
     @Override
     public PManagerResponseDTO pManagerLogin(PManagerLoginDTO pManagerLoginDTO) {
-        String email = pManagerLoginDTO.getEmail();
+        String phoneNumber = pManagerLoginDTO.getPhoneNumber();
         String password = pManagerLoginDTO.getPassword();
-        PManager pManager = pManagerDao.findPManagerByPasswordAndEmail(email, password);
+        PManager pManager = pManagerDao.findPManagerByPhoneAndPassword(phoneNumber, password);
+        if(pManager.getpManagerActiveStatus()) {
+            return mapPManagerToPManagerResponseDTO(pManager);
+        } else {
+            throw new DataNotFoundException("Invalid credentials");
+        }
 
-        return mapPManagerToPManagerResponseDTO(pManager);
+
     }
 
     @Override

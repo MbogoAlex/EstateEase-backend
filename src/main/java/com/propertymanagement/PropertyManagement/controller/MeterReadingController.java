@@ -14,5 +14,9 @@ public interface MeterReadingController {
 
     ResponseEntity<Response> updateMeterReading(MeterReadingDTO meterReadingDTO, MultipartFile image, int oldImageId, int meterReadingDataTableId) throws IOException;
 
+    ResponseEntity<Response> initializeMeterReading();
+
+    ResponseEntity<Response> getMeterWaterReadings(String month, String year, Boolean meterReadingTaken);
+
     String deleteImage(int id);
 }

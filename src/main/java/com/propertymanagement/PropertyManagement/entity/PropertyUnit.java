@@ -36,7 +36,6 @@ public class PropertyUnit {
 //    @JsonBackReference
     @OneToMany(mappedBy = "propertyUnit", fetch = FetchType.LAZY,
             cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
-//    @JoinColumn(name = "tenant_id")
     private List<Tenant> tenants = new ArrayList<>();
     @OneToMany(mappedBy = "propertyUnit", fetch = FetchType.LAZY,
     cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})

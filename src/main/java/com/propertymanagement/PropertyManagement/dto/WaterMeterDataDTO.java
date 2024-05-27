@@ -16,6 +16,8 @@ public class WaterMeterDataDTO {
     private Double waterUnits;
     private Double pricePerUnit;
     private LocalDateTime meterReadingDate;
+    private String month;
+    private String year;
     private String imageName;
 
 }

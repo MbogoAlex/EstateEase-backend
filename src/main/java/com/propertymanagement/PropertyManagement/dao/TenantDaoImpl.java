@@ -70,12 +70,13 @@ public class TenantDaoImpl implements TenantDao{
     }
 
     @Override
-    public Tenant fetchTenantByPasswordAndPhoneNumber(String password, String phoneNumber) {
-        TypedQuery<Tenant> query = entityManager.createQuery("from Tenant where password = :password and phoneNumber = :phoneNumber and tenantActive = true", Tenant.class);
-        query.setParameter("password", password);
+    public Tenant fetchTenantByPhoneNumberAndPassword(String phoneNumber, String password) {
+        TypedQuery<Tenant> query = entityManager.createQuery("from Tenant where phoneNumber = :phoneNumber and password = :password", Tenant.class);
         query.setParameter("phoneNumber", phoneNumber);
+        query.setParameter("password", password);
         return query.getSingleResult();
     }
+
 
     @Override
     public List<Tenant> getActiveTenants() {

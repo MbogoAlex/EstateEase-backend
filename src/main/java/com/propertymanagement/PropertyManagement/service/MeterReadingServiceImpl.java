@@ -10,6 +10,7 @@ import com.propertymanagement.PropertyManagement.entity.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -18,7 +19,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.UUID;
+import java.util.List;
 
 
 @Service
@@ -30,6 +33,8 @@ public class MeterReadingServiceImpl implements MeterReadingService {
     private SettingsDao settingsDao;
 
     private TenantDao tenantDao;
+
+
     @Autowired
     public MeterReadingServiceImpl(
             MeterReadingDao meterReadingDao,
@@ -42,7 +47,23 @@ public class MeterReadingServiceImpl implements MeterReadingService {
         this.settingsDao = settingsDao;
         this.tenantDao = tenantDao;
     }
+    @Transactional
+    @Override
+    public List<WaterMeterDataDTO> initializeMeterReading() {
+        List<PropertyUnit> propertyUnits = propertyUnitDao.fetchAllOccupiedUnits();
+        List<WaterMeterDataDTO> waterMeterDataDTOS = new ArrayList<>();
+        for(PropertyUnit propertyUnit : propertyUnits) {
+            WaterMeterData waterMeterData = new WaterMeterData();
+            waterMeterData.setPropertyUnit(propertyUnit);
+            waterMeterData.setYear(LocalDateTime.now().getMonth().toString().toUpperCase());
+            waterMeterData.setMonth(String.valueOf(LocalDateTime.now().getYear()));
+            waterMeterDataDTOS.add(waterMeterDataToWaterMeterDataDTO(meterReadingDao.addMeterWaterReading(waterMeterData)));
+        }
 
+        return waterMeterDataDTOS;
+    }
+
+    @Transactional
     @Override
     public WaterMeterDataDTO addMeterReading(MeterReadingDTO meterReadingDTO, MultipartFile image) throws IOException {
         Tenant tenant = tenantDao.getTenantByTenantId(meterReadingDTO.getTenantId());
@@ -64,14 +85,22 @@ public class MeterReadingServiceImpl implements MeterReadingService {
 
         WaterMeterData waterMeterData = new WaterMeterData();
         waterMeterData.setPropertyUnit(propertyUnit);
+        waterMeterData.setTenant(tenant);
         waterMeterData.setWaterUnits(meterReadingDTO.getWaterUnits());
         waterMeterData.setMeterReadingDate(LocalDateTime.now());
+        waterMeterData.setMonth(meterReadingDTO.getMonth().toUpperCase());
+        waterMeterData.setYear(meterReadingDTO.getYear());
         waterMeterData.setMeterReadingTaken(true);
         waterMeterData.setWaterMeterImage(waterMeterImage);
+        waterMeterImage.setWaterMeterData(waterMeterData);
 
-        return waterMeterDataToWaterMeterDataDTO(meterReadingDao.addMeterWaterReading(waterMeterData), fileName, tenant);
+
+        propertyUnit.getWaterMeterData().add(waterMeterData);
+//        propertyUnitDao.updateProperty(propertyUnit);
+
+        return waterMeterDataToWaterMeterDataDTO(meterReadingDao.updateMeterReading(waterMeterData));
     }
-
+    @Transactional
     @Override
     public WaterMeterDataDTO updateMeterReading(MeterReadingDTO meterReadingDTO, MultipartFile image, int oldImageId, int meterReadingDataTableId) throws IOException {
 
@@ -109,28 +138,44 @@ public class MeterReadingServiceImpl implements MeterReadingService {
 
         WaterMeterData waterMeterData = meterReadingDao.getMeterWaterReadingById(meterReadingDataTableId);
         waterMeterData.setPropertyUnit(propertyUnit);
+        waterMeterData.setTenant(tenant);
         waterMeterData.setWaterUnits(meterReadingDTO.getWaterUnits());
         waterMeterData.setMeterReadingDate(LocalDateTime.now());
+        waterMeterData.setMonth(meterReadingDTO.getMonth());
+        waterMeterData.setYear(meterReadingDTO.getYear());
         waterMeterData.setMeterReadingTaken(true);
         waterMeterData.setWaterMeterImage(waterMeterImage);
 
-        return waterMeterDataToWaterMeterDataDTO(meterReadingDao.updateMeterReading(waterMeterData), fileName, tenant);
+        return waterMeterDataToWaterMeterDataDTO(meterReadingDao.updateMeterReading(waterMeterData));
     }
 
+    @Override
+    public List<WaterMeterDataDTO> getMeterWaterReadings(String month, String year, Boolean meterReadingTaken) {
+        List<WaterMeterData> waterMeterDataList = meterReadingDao.getMeterWaterReadings(month, year, meterReadingTaken);
+        List<WaterMeterDataDTO> waterMeterDataDTOList = new ArrayList<>();
+        for(WaterMeterData waterMeterData : waterMeterDataList) {
+            waterMeterDataDTOList.add(waterMeterDataToWaterMeterDataDTO(waterMeterData));
+        }
+        return waterMeterDataDTOList;
+    }
+
+    @Transactional
     @Override
     public String deleteImage(int id) {
         return meterReadingDao.deleteImage(id);
     }
 
 
-    public WaterMeterDataDTO waterMeterDataToWaterMeterDataDTO(WaterMeterData waterMeterData, String imageName, Tenant tenant) {
+    public WaterMeterDataDTO waterMeterDataToWaterMeterDataDTO(WaterMeterData waterMeterData) {
         WaterMeterDataDTO waterMeterDataDTO = new WaterMeterDataDTO();
         waterMeterDataDTO.setPropertyName(waterMeterData.getPropertyUnit().getPropertyNumberOrName());
-        waterMeterDataDTO.setTenantName(tenant.getFullName());
+        waterMeterDataDTO.setTenantName(waterMeterData.getTenant().getFullName());
         waterMeterDataDTO.setWaterUnits(waterMeterData.getWaterUnits());
         waterMeterDataDTO.setPricePerUnit(waterMeterData.getPricePerUnit());
         waterMeterDataDTO.setMeterReadingDate(waterMeterData.getMeterReadingDate());
-        waterMeterDataDTO.setImageName(imageName);
+        waterMeterDataDTO.setMonth(waterMeterData.getMonth());
+        waterMeterDataDTO.setYear(waterMeterData.getYear());
+        waterMeterDataDTO.setImageName(waterMeterData.getWaterMeterImage().getName());
         return waterMeterDataDTO;
     }
 }

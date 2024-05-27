@@ -38,6 +38,7 @@ public interface PManagerDao {
 
     // find pmanager by email and password
     PManager findPManagerByPasswordAndEmail(String email, String password);
+    PManager findPManagerByPhoneAndPassword(String phoneNumber, String password);
 
     // fetch rent payment overview
     List<RentPayment> getRentPaymentOverview(String month, String year);

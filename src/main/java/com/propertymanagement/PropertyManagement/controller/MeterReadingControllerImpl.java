@@ -22,7 +22,7 @@ public class MeterReadingControllerImpl implements MeterReadingController{
     public MeterReadingControllerImpl(MeterReadingService meterReadingService) {
         this.meterReadingService = meterReadingService;
     }
-    @PostMapping("/meterreading")
+    @PutMapping("/meterreading")
     @Override
     public ResponseEntity<Response> addMeterReading(
             @RequestPart("data") MeterReadingDTO meterReadingDTO,
@@ -40,6 +40,17 @@ public class MeterReadingControllerImpl implements MeterReadingController{
     ) throws IOException {
         return buildResponse("waterMeter", meterReadingService.updateMeterReading(meterReadingDTO, image, oldImageId, meterReadingDataTableId), "Update successful", HttpStatus.CREATED);
     }
+    @PostMapping("/meterreading/initialize")
+    @Override
+    public ResponseEntity<Response> initializeMeterReading() {
+        return buildResponse("waterMeter", meterReadingService.initializeMeterReading(), "Success", HttpStatus.CREATED);
+    }
+    @GetMapping("meterreading/all/month={month}/year={year}/meterReadingTaken={meterReadingTaken}")
+    @Override
+    public ResponseEntity<Response> getMeterWaterReadings(@PathVariable("month") String month, @PathVariable("year") String year, @PathVariable("meterReadingTaken") Boolean meterReadingTaken) {
+        return buildResponse("waterMeter", meterReadingService.getMeterWaterReadings(month, year, meterReadingTaken), "Fetching successful", HttpStatus.OK);
+    }
+
     @DeleteMapping("/meterreading/imageId={imageId}")
     @Override
     public String deleteImage(@PathVariable("imageId") int id) {

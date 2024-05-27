@@ -213,6 +213,8 @@ public class PropertyUnitServiceImpl implements PropertyUnitService{
     }
 
     PropertyUnitResponseDTO mapFilteredPropertyToPropertyDto(PropertyUnit propertyUnit, Boolean occupied) {
+
+        List<WaterMeterDataDTO> meterReadings = new ArrayList<>();
         PropertyUnitResponseDTO propertyUnitResponseDTO = new PropertyUnitResponseDTO();
         propertyUnitResponseDTO.setPropertyUnitId(propertyUnit.getPropertyUnitId());
         propertyUnitResponseDTO.setNumberOfRooms(propertyUnit.getNumberOfRooms());
@@ -222,27 +224,44 @@ public class PropertyUnitServiceImpl implements PropertyUnitService{
         propertyUnitResponseDTO.setPropertyAddedAt(propertyUnit.getPropertyAddedAt().toString());
         propertyUnitResponseDTO.setPropertyAssignmentStatus(propertyUnit.getPropertyAssignmentStatus());
         for(Tenant tenant : propertyUnit.getTenants()) {
+            for(WaterMeterData waterMeterData : propertyUnit.getWaterMeterData()) {
+                WaterMeterDataDTO waterMeterDataDTO = new WaterMeterDataDTO();
+                waterMeterDataDTO.setPropertyName(propertyUnit.getPropertyNumberOrName());
+                waterMeterDataDTO.setTenantName(tenant.getFullName());
+                waterMeterDataDTO.setWaterUnits(waterMeterData.getWaterUnits());
+                waterMeterDataDTO.setPricePerUnit(waterMeterData.getPricePerUnit());
+                waterMeterDataDTO.setMeterReadingDate(waterMeterData.getMeterReadingDate());
+                waterMeterDataDTO.setMonth(waterMeterData.getMonth());
+                waterMeterDataDTO.setYear(waterMeterData.getYear());
+                waterMeterDataDTO.setImageName(waterMeterData.getWaterMeterImage().getName());
+                meterReadings.add(waterMeterDataDTO);
+            }
+            propertyUnitResponseDTO.getMeterReadings().addAll(meterReadings);
+
             if(occupied) {
                 if(tenant.getTenantActive()) {
                     PropertyTenantDTO propertyTenant = new PropertyTenantDTO();
+
                     propertyTenant.setTenantId(tenant.getTenantId());
                     propertyTenant.setFullName(tenant.getFullName());
                     propertyTenant.setEmail(tenant.getEmail());
                     propertyTenant.setTenantAddedAt(tenant.getTenantAddedAt().toString());
                     propertyTenant.setPhoneNumber(tenant.getPhoneNumber());
                     propertyTenant.setTenantActive(tenant.getTenantActive());
-                    propertyUnitResponseDTO.getTenants().add(propertyTenant);
+                    propertyUnitResponseDTO.setActiveTenant(propertyTenant);
                 }
             } else if(!occupied) {
-                PropertyTenantDTO propertyTenant = new PropertyTenantDTO();
-                propertyTenant.setTenantId(tenant.getTenantId());
-                propertyTenant.setFullName(tenant.getFullName());
-                propertyTenant.setEmail(tenant.getEmail());
-                propertyTenant.setTenantAddedAt(tenant.getTenantAddedAt().toString());
-                propertyTenant.setPhoneNumber(tenant.getPhoneNumber());
-                propertyTenant.setTenantActive(tenant.getTenantActive());
-                propertyUnitResponseDTO.getTenants().add(propertyTenant);
+                propertyUnitResponseDTO.setActiveTenant(null);
             }
+
+            PropertyTenantDTO propertyTenant = new PropertyTenantDTO();
+            propertyTenant.setTenantId(tenant.getTenantId());
+            propertyTenant.setFullName(tenant.getFullName());
+            propertyTenant.setEmail(tenant.getEmail());
+            propertyTenant.setTenantAddedAt(tenant.getTenantAddedAt().toString());
+            propertyTenant.setPhoneNumber(tenant.getPhoneNumber());
+            propertyTenant.setTenantActive(tenant.getTenantActive());
+            propertyUnitResponseDTO.getTenants().add(propertyTenant);
 
 
         }

@@ -8,7 +8,9 @@ import org.springframework.web.multipart.MultipartFile;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MeterReadingDTO {
-    private int propertyId;
-    private int tenantId;
-    private double waterUnits;
+    private Integer propertyId;
+    private Integer tenantId;
+    private Double waterUnits;
+    private String month;
+    private String year;
 }

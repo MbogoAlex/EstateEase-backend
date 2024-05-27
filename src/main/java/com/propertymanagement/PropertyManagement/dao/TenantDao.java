@@ -33,7 +33,7 @@ public interface TenantDao {
     RentPayment getRentPaymentRow(int rentPaymentTblId);
 
     // fetch tenant by password
-    Tenant fetchTenantByPasswordAndPhoneNumber(String password, String phoneNumber);
+    Tenant fetchTenantByPhoneNumberAndPassword(String phoneNumber, String password);
 
     List<Tenant> getActiveTenants();
 

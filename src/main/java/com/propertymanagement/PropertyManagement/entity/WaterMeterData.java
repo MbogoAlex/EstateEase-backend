@@ -26,6 +26,10 @@ public class WaterMeterData {
     private Double pricePerUnit;
     @Column(name = "meter_reading_date")
     private LocalDateTime meterReadingDate;
+    @Column(name = "month")
+    private String month;
+    @Column(name = "year")
+    private String year;
     @Column(name = "meter_reading_taken")
     private Boolean meterReadingTaken;
     @Column(name = "paid")
@@ -35,10 +39,14 @@ public class WaterMeterData {
     private WaterMeterImage waterMeterImage;
 
     @OneToOne(mappedBy = "waterMeterData", fetch = FetchType.LAZY,
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE,  CascadeType.REFRESH})
     private RentPayment rentPayment;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "water_meter_ref_id")
     private PropertyUnit propertyUnit;
+
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    @JoinColumn(name = "water_meter_ref_id")
+    private Tenant tenant;
 }

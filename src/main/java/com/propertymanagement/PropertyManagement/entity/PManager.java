@@ -41,6 +41,9 @@ public class PManager {
     @OneToMany(mappedBy = "pManager", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
     private List<Tenant> tenants = new ArrayList<>();
 
+    @OneToMany(mappedBy = "pManager", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
+    private List<Caretaker> caretakers = new ArrayList<>();
+
     public PManager() {}
 
     public PManager(String fullName, String nationalIdOrPassportNumber, String phoneNumber, String email) {

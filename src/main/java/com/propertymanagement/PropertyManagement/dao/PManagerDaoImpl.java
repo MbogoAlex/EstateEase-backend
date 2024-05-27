@@ -119,6 +119,14 @@ public class PManagerDaoImpl implements PManagerDao {
     }
 
     @Override
+    public PManager findPManagerByPhoneAndPassword(String phoneNumber, String password) {
+        TypedQuery<PManager> query = entityManager.createQuery("from PManager where phoneNumber =:phoneNumber and password = :password", PManager.class);
+        query.setParameter("phoneNumber", phoneNumber);
+        query.setParameter("password", password);
+        return query.getSingleResult();
+    }
+
+    @Override
     public List<RentPayment> getRentPaymentOverview(String month, String year) {
         TypedQuery<RentPayment> query = entityManager.createQuery("from RentPayment where MONTHNAME(dueDate) = :month AND YEAR(dueDate) = :year", RentPayment.class);
         query.setParameter("month", month);
@@ -128,6 +136,37 @@ public class PManagerDaoImpl implements PManagerDao {
 
     @Override
     public List<DetailedRentPaymentInfoDTO> getDetailedRentPayments(String month, String year, String propertyNumberOrName, Integer numberOfRooms, String tenantName, Integer tenantId, Boolean rentPaymentStatus, Boolean paidLate, Boolean tenantActive) {
+        String previousMonth = "";
+        String waterDataYear = year;
+
+        if(month.equalsIgnoreCase("january")) {
+            previousMonth = "December";
+            waterDataYear = String.valueOf((Integer.parseInt(year) - 1));
+        } else if(month.equalsIgnoreCase("february")) {
+            previousMonth = "January";
+        } else if(month.equalsIgnoreCase("march")) {
+            previousMonth = "February";
+        } else if(month.equalsIgnoreCase("april")) {
+            previousMonth = "March";
+        } else if(month.equalsIgnoreCase("may")) {
+            previousMonth = "April";
+        } else if(month.equalsIgnoreCase("june")) {
+            previousMonth = "May";
+        } else if(month.equalsIgnoreCase("july")) {
+            previousMonth = "June";
+        } else if(month.equalsIgnoreCase("august")) {
+            previousMonth = "July";
+        } else if(month.equalsIgnoreCase("september")) {
+            previousMonth = "August";
+        } else if(month.equalsIgnoreCase("october")) {
+            previousMonth = "September";
+        } else if(month.equalsIgnoreCase("november")) {
+            previousMonth = "October";
+        } else if(month.equalsIgnoreCase("december")) {
+            previousMonth = "November";
+        }
+
+
         String stringQuery = "select new DetailedRentPaymentInfoDTO(" +
                 "rp.rentPaymentTblId, " +
                 "rp.dueDate, " +
@@ -157,10 +196,10 @@ public class PManagerDaoImpl implements PManagerDao {
                 "from RentPayment rp " +
                 "join rp.tenant t " +
                 "join t.propertyUnit pu " +
-                "left join rp.waterMeterData wmd " +
+                "left join WaterMeterData wmd on :previousMonth = wmd.month and :waterDataYear = wmd.year " +
                 "left join wmd.waterMeterImage wmi " +
                 "where MONTHNAME(rp.dueDate) = :month " +
-                "and YEAR(rp.dueDate) = :year " +
+                "and  YEAR(rp.dueDate) = :formattedYear " +
                 "and (:tenantName is null or t.fullName like concat('%', :tenantName, '%')) " +
                 "and (:tenantId is null or t.tenantId = :tenantId) " +
                 "and (:numberOfRooms is null or pu.numberOfRooms = :numberOfRooms) " +
@@ -171,7 +210,10 @@ public class PManagerDaoImpl implements PManagerDao {
 
         TypedQuery<DetailedRentPaymentInfoDTO> query = entityManager.createQuery(stringQuery, DetailedRentPaymentInfoDTO.class);
         query.setParameter("month", month);
-        query.setParameter("year", year);
+//        query.setParameter("year", year);
+        query.setParameter("previousMonth", previousMonth);
+        query.setParameter("waterDataYear", waterDataYear);
+        query.setParameter("formattedYear", Integer.parseInt(year));
         query.setParameter("tenantName", tenantName);
         query.setParameter("tenantId", tenantId);
         query.setParameter("numberOfRooms", numberOfRooms);

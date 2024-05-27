@@ -70,4 +70,36 @@ public class DetailedRentPaymentInfoDTO {
         this.meterReadingDate = meterReadingDate;
         this.imageFile = imageFile;
     }
+
+    @Override
+    public String toString() {
+        return "DetailedRentPaymentInfoDTO{" +
+                "rentPaymentTblId=" + rentPaymentTblId +
+                ", dueDate=" + dueDate +
+                ", month=" + month +
+                ", monthlyRent=" + monthlyRent +
+                ", paidAmount=" + paidAmount +
+                ", paidAt=" + paidAt +
+                ", paidLate=" + paidLate +
+                ", daysLate=" + daysLate +
+                ", rentPaymentStatus=" + rentPaymentStatus +
+                ", penaltyActive=" + penaltyActive +
+                ", penaltyPerDay=" + penaltyPerDay +
+                ", transactionId='" + transactionId + '\'' +
+                ", year=" + year +
+                ", propertyNumberOrName='" + propertyNumberOrName + '\'' +
+                ", numberOfRooms=" + numberOfRooms +
+                ", tenantId=" + tenantId +
+                ", email='" + email + '\'' +
+                ", fullName='" + fullName + '\'' +
+                ", nationalIdOrPassport='" + nationalIdOrPassport + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", tenantAddedAt=" + tenantAddedAt +
+                ", tenantActive=" + tenantActive +
+                ", waterUnits=" + waterUnits +
+                ", pricePerUnit=" + pricePerUnit +
+                ", meterReadingDate=" + meterReadingDate +
+                ", imageFile='" + imageFile + '\'' +
+                '}';
+    }
 }

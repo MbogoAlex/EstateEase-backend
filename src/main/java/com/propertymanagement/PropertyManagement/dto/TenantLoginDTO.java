@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TenantLoginDTO {
-    private String tenantRoomNameOrNumber;
     private String tenantPhoneNumber;
     private String tenantPassword;
 }

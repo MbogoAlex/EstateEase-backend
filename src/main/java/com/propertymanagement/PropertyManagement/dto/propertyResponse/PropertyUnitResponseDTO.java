@@ -17,6 +17,7 @@ public class PropertyUnitResponseDTO {
     private Double monthlyRent;
     private String propertyAddedAt;
     private Boolean propertyAssignmentStatus;
+    private PropertyTenantDTO activeTenant;
     private List<PropertyTenantDTO> tenants = new ArrayList<>();
     private List<WaterMeterDataDTO> meterReadings = new ArrayList<>();
 }
