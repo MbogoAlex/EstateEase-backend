@@ -35,20 +35,24 @@ public class MeterReadingControllerImpl implements MeterReadingController{
     public ResponseEntity<Response> updateMeterReading(
             @RequestPart("data") MeterReadingDTO meterReadingDTO,
             @RequestPart(value = "image") MultipartFile image,
-            @PathVariable("oldImageId") int oldImageId,
-            @PathVariable("meterReadingDataTableId") int meterReadingDataTableId
+            @PathVariable("oldImageId") int oldImageId
     ) throws IOException {
-        return buildResponse("waterMeter", meterReadingService.updateMeterReading(meterReadingDTO, image, oldImageId, meterReadingDataTableId), "Update successful", HttpStatus.CREATED);
+        return buildResponse("waterMeter", meterReadingService.updateMeterReading(meterReadingDTO, image, oldImageId), "Update successful", HttpStatus.CREATED);
     }
     @PostMapping("/meterreading/initialize")
     @Override
     public ResponseEntity<Response> initializeMeterReading() {
         return buildResponse("waterMeter", meterReadingService.initializeMeterReading(), "Success", HttpStatus.CREATED);
     }
-    @GetMapping("meterreading/all/month={month}/year={year}/meterReadingTaken={meterReadingTaken}")
+    @GetMapping("meterreading/all")
     @Override
-    public ResponseEntity<Response> getMeterWaterReadings(@PathVariable("month") String month, @PathVariable("year") String year, @PathVariable("meterReadingTaken") Boolean meterReadingTaken) {
-        return buildResponse("waterMeter", meterReadingService.getMeterWaterReadings(month, year, meterReadingTaken), "Fetching successful", HttpStatus.OK);
+    public ResponseEntity<Response> getMeterWaterReadings(
+            @RequestParam("month") String month,
+            @RequestParam("year") String year,
+            @RequestParam("meterReadingTaken") Boolean meterReadingTaken,
+            @RequestParam(value = "tenantName", required = false) String tenantName,
+            @RequestParam(value = "propertyName", required = false) String propertyName) {
+        return buildResponse("waterMeter", meterReadingService.getMeterWaterReadings(month, year, meterReadingTaken, tenantName, propertyName), "Fetching successful", HttpStatus.OK);
     }
 
     @DeleteMapping("/meterreading/imageId={imageId}")

@@ -12,11 +12,11 @@ import java.io.IOException;
 public interface MeterReadingController {
     ResponseEntity<Response> addMeterReading(MeterReadingDTO meterReadingDTO, MultipartFile image) throws IOException;
 
-    ResponseEntity<Response> updateMeterReading(MeterReadingDTO meterReadingDTO, MultipartFile image, int oldImageId, int meterReadingDataTableId) throws IOException;
+    ResponseEntity<Response> updateMeterReading(MeterReadingDTO meterReadingDTO, MultipartFile image, int oldImageId) throws IOException;
 
     ResponseEntity<Response> initializeMeterReading();
 
-    ResponseEntity<Response> getMeterWaterReadings(String month, String year, Boolean meterReadingTaken);
+    ResponseEntity<Response> getMeterWaterReadings(String month, String year, Boolean meterReadingTaken, String tenantName, String propertyName);
 
     String deleteImage(int id);
 }

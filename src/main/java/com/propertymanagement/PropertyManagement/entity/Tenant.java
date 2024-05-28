@@ -183,6 +183,8 @@ public class Tenant {
         this.tenantArchivedAt = tenantArchivedAt;
     }
 
+
+
     //    public int getPropertyUnitId() {
 //        return propertyUnitId;
 //    }

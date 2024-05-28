@@ -7,7 +7,6 @@ import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -31,11 +30,13 @@ public class MeterReadingDaoImpl implements MeterReadingDao{
     }
 
     @Override
-    public List<WaterMeterData> getMeterWaterReadings(String month, String year, Boolean meterReadingTaken) {
-        TypedQuery<WaterMeterData> query = entityManager.createQuery("from WaterMeterData where month = :month and year = :year and meterReadingTaken = :meterReadingTaken", WaterMeterData.class);
+    public List<WaterMeterData> getMeterWaterReadings(String month, String year, Boolean meterReadingTaken, String tenantName, String propertyName) {
+        TypedQuery<WaterMeterData> query = entityManager.createQuery("from WaterMeterData where :month is null or month = :month and :year is null or year = :year and :meterReadingTaken is null or meterReadingTaken = :meterReadingTaken and :tenantName is null or tenant.fullName like concat('%', :tenantName, '%') and :propertyName is null or propertyUnit.propertyNumberOrName like concat('%', :propertyName, '%')", WaterMeterData.class);
         query.setParameter("month", month);
         query.setParameter("year", year);
         query.setParameter("meterReadingTaken", meterReadingTaken);
+        query.setParameter("tenantName", tenantName);
+        query.setParameter("propertyName", propertyName);
         return query.getResultList();
     }
 
@@ -56,6 +57,13 @@ public class MeterReadingDaoImpl implements MeterReadingDao{
     @Override
     public WaterMeterImage getImageById(int id) {
         TypedQuery<WaterMeterImage> query = entityManager.createQuery("from WaterMeterImage where id = :id", WaterMeterImage.class);
+        query.setParameter("id", id);
+        return query.getSingleResult();
+    }
+
+    @Override
+    public WaterMeterData getWaterMeterDataById(int id) {
+        TypedQuery<WaterMeterData> query = entityManager.createQuery("from WaterMeterData where id = :id", WaterMeterData.class);
         query.setParameter("id", id);
         return query.getSingleResult();
     }

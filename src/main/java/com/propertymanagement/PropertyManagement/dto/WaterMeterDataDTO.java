@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class WaterMeterDataDTO {
+    private Integer id;
     private String propertyName;
     private String tenantName;
     private Double waterUnits;
@@ -19,5 +20,23 @@ public class WaterMeterDataDTO {
     private String month;
     private String year;
     private String imageName;
+    private PreviousWaterMeterDataDTO previousWaterMeterData;
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class PreviousWaterMeterDataDTO {
+        private Integer id;
+        private String propertyName;
+        private String tenantName;
+        private Double waterUnits;
+        private Double pricePerUnit;
+        private LocalDateTime meterReadingDate;
+        private String month;
+        private String year;
+        private String imageName;
+    }
 
 }
+
+

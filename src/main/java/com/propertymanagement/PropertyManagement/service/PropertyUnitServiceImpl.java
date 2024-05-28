@@ -224,7 +224,7 @@ public class PropertyUnitServiceImpl implements PropertyUnitService{
         propertyUnitResponseDTO.setPropertyAddedAt(propertyUnit.getPropertyAddedAt().toString());
         propertyUnitResponseDTO.setPropertyAssignmentStatus(propertyUnit.getPropertyAssignmentStatus());
         for(Tenant tenant : propertyUnit.getTenants()) {
-            for(WaterMeterData waterMeterData : propertyUnit.getWaterMeterData()) {
+            for(WaterMeterData waterMeterData : tenant.getWaterMeterDataList()) {
                 WaterMeterDataDTO waterMeterDataDTO = new WaterMeterDataDTO();
                 waterMeterDataDTO.setPropertyName(propertyUnit.getPropertyNumberOrName());
                 waterMeterDataDTO.setTenantName(tenant.getFullName());

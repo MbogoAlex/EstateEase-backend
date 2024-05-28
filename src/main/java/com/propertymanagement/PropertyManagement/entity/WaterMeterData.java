@@ -47,6 +47,6 @@ public class WaterMeterData {
     private PropertyUnit propertyUnit;
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
-    @JoinColumn(name = "water_meter_ref_id")
+    @JoinColumn(name = "water_meter_dt_ref_id")
     private Tenant tenant;
 }

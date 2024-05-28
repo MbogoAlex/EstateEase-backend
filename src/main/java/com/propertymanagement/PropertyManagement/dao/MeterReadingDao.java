@@ -9,12 +9,14 @@ public interface MeterReadingDao {
     WaterMeterData addMeterWaterReading(WaterMeterData waterMeterData);
     WaterMeterData getMeterWaterReadingById(int id);
 
-    List<WaterMeterData> getMeterWaterReadings(String month, String year, Boolean meterReadingTaken);
+    List<WaterMeterData> getMeterWaterReadings(String month, String year, Boolean meterReadingTaken, String tenantName, String propertyName);
 
     String deleteImage(int id);
 
     WaterMeterData updateMeterReading(WaterMeterData waterMeterData);
 
     WaterMeterImage getImageById(int id);
+
+    WaterMeterData getWaterMeterDataById(int id);
 
 }

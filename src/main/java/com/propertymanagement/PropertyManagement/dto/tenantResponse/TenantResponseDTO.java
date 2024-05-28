@@ -1,5 +1,6 @@
 package com.propertymanagement.PropertyManagement.dto.tenantResponse;
 
+import com.propertymanagement.PropertyManagement.dto.MeterReadingDTO;
 import com.propertymanagement.PropertyManagement.dto.RentPaymentDTO;
 import com.propertymanagement.PropertyManagement.dto.RentPaymentDetailsDTO;
 import com.propertymanagement.PropertyManagement.dto.WaterMeterDataDTO;
@@ -28,6 +29,7 @@ public class TenantResponseDTO {
     private Boolean tenantActive;
     private TenantPropertyDTO propertyUnit;
     private List<PaymentInfoDTO> paymentInfo = new ArrayList<>();
+    private List<WaterMeterDataDTO> waterMeterDataDTOList = new ArrayList<>();
 
     @Data
     @AllArgsConstructor

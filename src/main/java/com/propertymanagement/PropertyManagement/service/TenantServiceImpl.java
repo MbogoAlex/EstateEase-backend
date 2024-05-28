@@ -425,6 +425,21 @@ public class TenantServiceImpl implements TenantService{
         tenantResponseDTO.setTenantAddedAt(tenant.getTenantAddedAt().toString());
         tenantResponseDTO.setTenantActive(tenant.getTenantActive());
 
+        for(WaterMeterData waterMeterData : tenant.getWaterMeterDataList()) {
+            WaterMeterDataDTO waterMeterDataDTO = new WaterMeterDataDTO();
+            waterMeterDataDTO.setPropertyName(waterMeterData.getPropertyUnit().getPropertyNumberOrName());
+            waterMeterDataDTO.setTenantName(waterMeterData.getTenant().getFullName());
+            waterMeterDataDTO.setWaterUnits(waterMeterData.getWaterUnits());
+            waterMeterDataDTO.setPricePerUnit(waterMeterData.getPricePerUnit());
+            waterMeterDataDTO.setMeterReadingDate(waterMeterData.getMeterReadingDate());
+            waterMeterDataDTO.setMonth(waterMeterData.getMonth());
+            waterMeterDataDTO.setYear(waterMeterData.getYear());
+            waterMeterDataDTO.setImageName(waterMeterData.getWaterMeterImage().getName());
+            tenantResponseDTO.getWaterMeterDataDTOList().add(waterMeterDataDTO);
+        }
+
+
+
         for(RentPayment rentPayment : tenant.getRentPayments()) {
             long daysLate;
             TenantResponseDTO.PaymentInfoDTO paymentInfo = new TenantResponseDTO.PaymentInfoDTO();
