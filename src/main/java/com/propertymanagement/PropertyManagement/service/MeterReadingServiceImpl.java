@@ -212,6 +212,11 @@ public class MeterReadingServiceImpl implements MeterReadingService {
         return waterMeterDataDTOList;
     }
 
+    @Override
+    public WaterMeterDataDTO getWaterMeterDataById(int id) {
+        return waterMeterDataToWaterMeterDataDTO(meterReadingDao.getWaterMeterDataById(id));
+    }
+
     @Transactional
     @Override
     public String deleteImage(int id) {

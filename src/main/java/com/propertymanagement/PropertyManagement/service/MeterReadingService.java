@@ -16,5 +16,7 @@ public interface MeterReadingService {
 
     List<WaterMeterDataDTO> getMeterWaterReadings(String month, String year, Boolean meterReadingTaken, String tenantName, String propertyName);
 
+    WaterMeterDataDTO getWaterMeterDataById(int id);
+
     String deleteImage(int id);
 }

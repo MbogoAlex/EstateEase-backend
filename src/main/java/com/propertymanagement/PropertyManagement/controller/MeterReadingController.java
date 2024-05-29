@@ -18,5 +18,7 @@ public interface MeterReadingController {
 
     ResponseEntity<Response> getMeterWaterReadings(String month, String year, Boolean meterReadingTaken, String tenantName, String propertyName);
 
+    ResponseEntity<Response> getWaterMeterDataById(int id);
+
     String deleteImage(int id);
 }

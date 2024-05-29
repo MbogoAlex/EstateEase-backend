@@ -54,6 +54,11 @@ public class MeterReadingControllerImpl implements MeterReadingController{
             @RequestParam(value = "propertyName", required = false) String propertyName) {
         return buildResponse("waterMeter", meterReadingService.getMeterWaterReadings(month, year, meterReadingTaken, tenantName, propertyName), "Fetching successful", HttpStatus.OK);
     }
+    @GetMapping("meterreading/id={id}")
+    @Override
+    public ResponseEntity<Response> getWaterMeterDataById(@PathVariable("id") int id) {
+        return buildResponse("waterMeter", meterReadingService.getWaterMeterDataById(id), "Fetched successfully", HttpStatus.OK);
+    }
 
     @DeleteMapping("/meterreading/imageId={imageId}")
     @Override
