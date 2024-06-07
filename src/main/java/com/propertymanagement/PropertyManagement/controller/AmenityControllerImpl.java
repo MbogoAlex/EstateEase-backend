@@ -50,6 +50,16 @@ public class AmenityControllerImpl implements AmenityController{
     public ResponseEntity<Response> getAllAmenities() {
         return buildResponse("amenities", amenityService.getAllAmenities(), "Amenities fetched", HttpStatus.OK);
     }
+    @GetMapping("amenity/{id}")
+    @Override
+    public ResponseEntity<Response> getAmenity(@PathVariable("id") int id) {
+        return buildResponse("amenity", amenityService.getAmenity(id), "Amenity fetched", HttpStatus.OK);
+    }
+    @DeleteMapping("amenity/id/image")
+    @Override
+    public ResponseEntity<Response> deleteImage(@PathVariable("id") int id) {
+        return buildResponse("amenity", amenityService.deleteImage(id), "Image deleted", HttpStatus.OK);
+    }
 
     private ResponseEntity<Response> buildResponse(String desc, Object data, String message, HttpStatus status) {
         return ResponseEntity.status(status)

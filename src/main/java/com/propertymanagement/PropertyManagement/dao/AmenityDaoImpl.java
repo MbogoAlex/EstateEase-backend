@@ -8,6 +8,7 @@ import jakarta.persistence.TypedQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.lang.reflect.Type;
 import java.util.List;
 
 @Repository
@@ -64,5 +65,19 @@ public class AmenityDaoImpl implements AmenityDao{
     public List<Amenity> getAllAmenities() {
         TypedQuery<Amenity> query = entityManager.createQuery("from Amenity", Amenity.class);
         return query.getResultList();
+    }
+
+    @Override
+    public Amenity getAmenity(int id) {
+        TypedQuery<Amenity> query = entityManager.createQuery("from Amenity where id = :id", Amenity.class);
+        query.setParameter("id", id);
+        return query.getSingleResult();
+    }
+
+    @Override
+    public AmenityImage getAmenityImage(int id) {
+        TypedQuery<AmenityImage> query = entityManager.createQuery("from AmenityImage where id = :id", AmenityImage.class);
+        query.setParameter("id", id);
+        return query.getSingleResult();
     }
 }

@@ -15,5 +15,9 @@ public interface AmenityService {
 
     List<AmenityResponseDTO> getAllAmenities();
 
+    AmenityResponseDTO getAmenity(int id);
+
     String deleteAmenity(int amenityId);
+
+    String deleteImage(int imageId);
 }

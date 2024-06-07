@@ -73,8 +73,6 @@ public class AmenityServiceImpl implements AmenityService{
         Settings domainName = settingsDao.findBySettingsKey("domain");
         String domain = domainName.getValue();
 
-
-
         for(AmenityResponseDTO.AmenityResponseImage image : oldImages) {
             AmenityImage oldImage = amenityDao.getImage(image.getId());
             String oldImagePath = path + oldImage.getName();
@@ -124,17 +122,52 @@ public class AmenityServiceImpl implements AmenityService{
         return mappedAmenities;
     }
 
+    @Override
+    public AmenityResponseDTO getAmenity(int id) {
+        Settings settings = settingsDao.findBySettingsKey("domain");
+        return mapAmenityToAmenityDTO(amenityDao.getAmenity(id), settings.getValue());
+    }
+
     @Transactional
     @Override
     public String deleteAmenity(int amenityId) {
+        Settings imagePath = settingsDao.findBySettingsKey("imagePath");
+        String path = imagePath.getValue();
+
         Amenity amenity = amenityDao.getById(amenityId);
         if(!amenity.getImages().isEmpty()) {
             for(AmenityImage image : amenity.getImages()) {
-                amenityDao.deleteImage(image.getId());
+                String oldImagePath = path + image.getName();
+                Path oldPath = Paths.get(oldImagePath);
+                try {
+                    Files.delete(oldPath);
+                    amenityDao.deleteImage(image.getId());
+                } catch (IOException e) {
+                    System.err.println("Error deleting image: " + e.getMessage());
+                }
             }
         }
 
         return amenityDao.deleteAmenity(amenityId);
+    }
+
+    @Override
+    public String deleteImage(int imageId) {
+        Settings imagePath = settingsDao.findBySettingsKey("imagePath");
+        AmenityImage amenityImage = amenityDao.getAmenityImage(imageId);
+        String path = imagePath.getValue();
+
+        String oldImagePath = path + amenityImage.getName();
+        Path oldPath = Paths.get(oldImagePath);
+
+        try {
+            Files.delete(oldPath);
+            amenityDao.deleteImage(amenityImage.getId());
+        } catch (IOException e) {
+            System.err.println("Error deleting image: " + e.getMessage());
+        }
+
+        return "Amenity image deleted";
     }
 
     AmenityResponseDTO mapAmenityToAmenityDTO(Amenity amenity, String domain) {

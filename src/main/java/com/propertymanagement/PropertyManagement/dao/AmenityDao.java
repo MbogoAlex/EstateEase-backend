@@ -17,4 +17,8 @@ public interface AmenityDao {
     String deleteAmenity(int id);
 
     List<Amenity> getAllAmenities();
+
+    Amenity getAmenity(int id);
+
+    AmenityImage getAmenityImage(int id);
 }

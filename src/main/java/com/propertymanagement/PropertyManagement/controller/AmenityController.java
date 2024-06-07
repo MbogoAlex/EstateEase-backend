@@ -16,4 +16,8 @@ public interface AmenityController {
     ResponseEntity<Response> deleteAmenity(int amenityId);
 
     ResponseEntity<Response> getAllAmenities();
+
+    ResponseEntity<Response> getAmenity(int id);
+
+    ResponseEntity<Response> deleteImage(int id);
 }
