@@ -31,7 +31,13 @@ public class MeterReadingDaoImpl implements MeterReadingDao{
 
     @Override
     public List<WaterMeterData> getMeterWaterReadings(String month, String year, Boolean meterReadingTaken, String tenantName, String propertyName) {
-        TypedQuery<WaterMeterData> query = entityManager.createQuery("from WaterMeterData where :month is null or month = :month and :year is null or year = :year and :meterReadingTaken is null or meterReadingTaken = :meterReadingTaken and :tenantName is null or tenant.fullName like concat('%', :tenantName, '%') and :propertyName is null or propertyUnit.propertyNumberOrName like concat('%', :propertyName, '%')", WaterMeterData.class);
+        System.out.println("month: "+month+" year: "+year+" meterReadingTaken: "+meterReadingTaken+" tenantName: "+tenantName+" propertyName: "+propertyName);
+        TypedQuery<WaterMeterData> query = entityManager.createQuery("from WaterMeterData " +
+                "where month = :month " +
+                "and year = :year " +
+                "and (:meterReadingTaken is null or meterReadingTaken = :meterReadingTaken) " +
+                "and (:tenantName is null or tenant.fullName like concat('%', :tenantName, '%')) " +
+                "and (:propertyName is null or propertyUnit.propertyNumberOrName like concat('%', :propertyName, '%'))", WaterMeterData.class);
         query.setParameter("month", month);
         query.setParameter("year", year);
         query.setParameter("meterReadingTaken", meterReadingTaken);

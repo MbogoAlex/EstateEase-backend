@@ -4,6 +4,7 @@ import com.propertymanagement.PropertyManagement.dto.CaretakerAccountDTO;
 import com.propertymanagement.PropertyManagement.dto.CaretakerLoginDTO;
 import com.propertymanagement.PropertyManagement.dto.Response;
 import com.propertymanagement.PropertyManagement.service.CaretakerService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +17,7 @@ import static java.util.Map.of;
 @RequestMapping("/api/")
 public class CaretakerControllerImpl implements CaretakerController{
     private CaretakerService caretakerService;
-
+    @Autowired
     public CaretakerControllerImpl(CaretakerService caretakerService) {
         this.caretakerService = caretakerService;
     }

@@ -20,6 +20,7 @@ public class WaterMeterDataDTO {
     private String month;
     private String year;
     private String imageName;
+    private Integer imageId;
     private PreviousWaterMeterDataDTO previousWaterMeterData;
 
     @Data
@@ -35,6 +36,7 @@ public class WaterMeterDataDTO {
         private String month;
         private String year;
         private String imageName;
+        private Integer imageId;
     }
 
 }

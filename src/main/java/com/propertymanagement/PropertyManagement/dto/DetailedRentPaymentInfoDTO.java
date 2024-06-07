@@ -43,6 +43,30 @@ public class DetailedRentPaymentInfoDTO {
 
     private String imageFile;
 
+    public DetailedRentPaymentInfoDTO(int rentPaymentTblId, LocalDate dueDate, Month month, Double monthlyRent, Double paidAmount, LocalDateTime paidAt, Boolean paidLate, Boolean rentPaymentStatus, Boolean penaltyActive, Double penaltyPerDay, String transactionId, Year year, String propertyNumberOrName, Integer numberOfRooms, Integer tenantId, String email, String fullName, String nationalIdOrPassport, String phoneNumber, LocalDateTime tenantAddedAt, Boolean tenantActive) {
+        this.rentPaymentTblId = rentPaymentTblId;
+        this.dueDate = dueDate;
+        this.month = month;
+        this.monthlyRent = monthlyRent;
+        this.paidAmount = paidAmount;
+        this.paidAt = paidAt;
+        this.paidLate = paidLate;
+        this.rentPaymentStatus = rentPaymentStatus;
+        this.penaltyActive = penaltyActive;
+        this.penaltyPerDay = penaltyPerDay;
+        this.transactionId = transactionId;
+        this.year = year;
+        this.propertyNumberOrName = propertyNumberOrName;
+        this.numberOfRooms = numberOfRooms;
+        this.tenantId = tenantId;
+        this.email = email;
+        this.fullName = fullName;
+        this.nationalIdOrPassport = nationalIdOrPassport;
+        this.phoneNumber = phoneNumber;
+        this.tenantAddedAt = tenantAddedAt;
+        this.tenantActive = tenantActive;
+    }
+
     public DetailedRentPaymentInfoDTO(int rentPaymentTblId, LocalDate dueDate, Month month, Double monthlyRent, Double paidAmount, LocalDateTime paidAt, Boolean paidLate, Boolean rentPaymentStatus, Boolean penaltyActive, Double penaltyPerDay, String transactionId, Year year, String propertyNumberOrName, Integer numberOfRooms, Integer tenantId, String email, String fullName, String nationalIdOrPassport, String phoneNumber, LocalDateTime tenantAddedAt, Boolean tenantActive, Double waterUnits, Double pricePerUnit, LocalDateTime meterReadingDate, String imageFile) {
         this.rentPaymentTblId = rentPaymentTblId;
         this.dueDate = dueDate;

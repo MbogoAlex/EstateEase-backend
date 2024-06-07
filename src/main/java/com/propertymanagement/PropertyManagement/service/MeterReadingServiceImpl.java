@@ -51,6 +51,8 @@ public class MeterReadingServiceImpl implements MeterReadingService {
     @Override
     public List<WaterMeterDataDTO> initializeMeterReading() {
         List<Tenant> tenants = tenantDao.getActiveTenants();
+        Settings domain = settingsDao.findBySettingsKey("domain");
+        Settings imagePath = settingsDao.findBySettingsKey("imagePath");
         List<WaterMeterDataDTO> waterMeterDataDTOS = new ArrayList<>();
         for(Tenant tenant : tenants) {
             WaterMeterData waterMeterData = new WaterMeterData();
@@ -64,7 +66,7 @@ public class MeterReadingServiceImpl implements MeterReadingService {
             waterMeterData.setYear(String.valueOf(LocalDateTime.now().getYear()));
             waterMeterImage.setWaterMeterData(waterMeterData);
             WaterMeterDataDTO waterMeterDataDTO;
-            waterMeterDataDTO = waterMeterDataToWaterMeterDataDTO(meterReadingDao.addMeterWaterReading(waterMeterData));
+            waterMeterDataDTO = waterMeterDataToWaterMeterDataDTO(meterReadingDao.addMeterWaterReading(waterMeterData), domain.getValue(), imagePath.getValue());
             waterMeterDataDTOS.add(waterMeterDataDTO);
         }
 
@@ -79,8 +81,8 @@ public class MeterReadingServiceImpl implements MeterReadingService {
         PropertyUnit propertyUnit = waterMeterData.getPropertyUnit();
         Settings imagePath = settingsDao.findBySettingsKey("imagePath");
         String path = imagePath.getValue();
-//        Settings domainName = settingsDao.findBySettingsKey("domain");
-//        String domain = domainName.getValue();
+        Settings domainName = settingsDao.findBySettingsKey("domain");
+        String domain = domainName.getValue();
 
         String fileName = UUID.randomUUID() + "_" + image.getOriginalFilename().replace(" ", "");
         String filePath = path + fileName;
@@ -109,7 +111,7 @@ public class MeterReadingServiceImpl implements MeterReadingService {
         propertyUnit.getWaterMeterData().add(waterMeterData);
 //        propertyUnitDao.updateProperty(propertyUnit);
 
-        return waterMeterDataToWaterMeterDataDTO(meterReadingDao.updateMeterReading(waterMeterData));
+        return waterMeterDataToWaterMeterDataDTO(meterReadingDao.updateMeterReading(waterMeterData), domain, filePath);
     }
     @Transactional
     @Override
@@ -128,7 +130,7 @@ public class MeterReadingServiceImpl implements MeterReadingService {
 
         try {
             Files.delete(oldPath);
-            meterReadingDao.deleteImage(oldImageId);
+//            meterReadingDao.deleteImage(oldImageId);
         } catch (IOException e) {
             System.err.println("Error deleting image: " + e.getMessage());
         }
@@ -136,8 +138,8 @@ public class MeterReadingServiceImpl implements MeterReadingService {
         Tenant tenant = waterMeterData.getTenant();
 
         String path = result.getValue();
-//        Settings domainName = settingsDao.findBySettingsKey("domain");
-//        String domain = domainName.getValue();
+        Settings domainName = settingsDao.findBySettingsKey("domain");
+        String domain = domainName.getValue();
 
         String fileName = UUID.randomUUID() + "_" + image.getOriginalFilename().replace(" ", "");
         String filePath = path + fileName;
@@ -158,13 +160,13 @@ public class MeterReadingServiceImpl implements MeterReadingService {
         waterMeterData.setMeterReadingTaken(true);
         waterMeterData.setWaterMeterImage(waterMeterImage);
 
-        return waterMeterDataToWaterMeterDataDTO(meterReadingDao.updateMeterReading(waterMeterData));
+        return waterMeterDataToWaterMeterDataDTO(meterReadingDao.updateMeterReading(waterMeterData), domain, filePath);
     }
 
     @Override
     public List<WaterMeterDataDTO> getMeterWaterReadings(String month, String year, Boolean meterReadingTaken, String tenantName, String propertyName) {
-        String currentMonth = LocalDateTime.now().getMonth().toString();
-        String currentYear = String.valueOf(LocalDateTime.now().getYear());
+        String currentMonth = month;
+        String currentYear = year;
 
         String previousReadingMonth = "";
         String previousReadingYear = currentYear;
@@ -198,14 +200,16 @@ public class MeterReadingServiceImpl implements MeterReadingService {
 
 
         List<WaterMeterData> waterMeterDataList = meterReadingDao.getMeterWaterReadings(month, year, meterReadingTaken, tenantName, propertyName);
+        Settings domain = settingsDao.findBySettingsKey("domain");
+        Settings imagePath = settingsDao.findBySettingsKey("imagePath");
         List<WaterMeterDataDTO> waterMeterDataDTOList = new ArrayList<>();
         for(WaterMeterData waterMeterData : waterMeterDataList) {
             WaterMeterDataDTO waterMeterDataDTO;
             WaterMeterDataDTO.PreviousWaterMeterDataDTO previousWaterMeterDataDTO = new WaterMeterDataDTO.PreviousWaterMeterDataDTO();
             if(waterMeterData.getMonth().equalsIgnoreCase(previousReadingMonth) && waterMeterData.getYear().equalsIgnoreCase(previousReadingYear)) {
-                previousWaterMeterDataDTO = waterMeterDataToPreviousWaterMeterDataDTO(waterMeterData);
+                previousWaterMeterDataDTO = waterMeterDataToPreviousWaterMeterDataDTO(waterMeterData, domain.getValue(), imagePath.getValue());
             }
-            waterMeterDataDTO = waterMeterDataToWaterMeterDataDTO(waterMeterData);
+            waterMeterDataDTO = waterMeterDataToWaterMeterDataDTO(waterMeterData, domain.getValue(), imagePath.getValue());
             waterMeterDataDTO.setPreviousWaterMeterData(previousWaterMeterDataDTO);
             waterMeterDataDTOList.add(waterMeterDataDTO);
         }
@@ -214,7 +218,9 @@ public class MeterReadingServiceImpl implements MeterReadingService {
 
     @Override
     public WaterMeterDataDTO getWaterMeterDataById(int id) {
-        return waterMeterDataToWaterMeterDataDTO(meterReadingDao.getWaterMeterDataById(id));
+        Settings domain = settingsDao.findBySettingsKey("domain");
+        Settings filepath = settingsDao.findBySettingsKey("imagePath");
+        return waterMeterDataToWaterMeterDataDTO(meterReadingDao.getWaterMeterDataById(id), domain.getValue(), filepath.getValue());
     }
 
     @Transactional
@@ -224,7 +230,7 @@ public class MeterReadingServiceImpl implements MeterReadingService {
     }
 
 
-    public WaterMeterDataDTO waterMeterDataToWaterMeterDataDTO(WaterMeterData waterMeterData) {
+    public WaterMeterDataDTO waterMeterDataToWaterMeterDataDTO(WaterMeterData waterMeterData, String domain, String filePath) {
         WaterMeterDataDTO waterMeterDataDTO = new WaterMeterDataDTO();
         waterMeterDataDTO.setId(waterMeterData.getId());
         waterMeterDataDTO.setPropertyName(waterMeterData.getPropertyUnit().getPropertyNumberOrName());
@@ -234,11 +240,12 @@ public class MeterReadingServiceImpl implements MeterReadingService {
         waterMeterDataDTO.setMeterReadingDate(waterMeterData.getMeterReadingDate());
         waterMeterDataDTO.setMonth(waterMeterData.getMonth());
         waterMeterDataDTO.setYear(waterMeterData.getYear());
-        waterMeterDataDTO.setImageName(waterMeterData.getWaterMeterImage().getName());
+        waterMeterDataDTO.setImageName(domain + "/image/" + waterMeterData.getWaterMeterImage().getName());
+        waterMeterDataDTO.setImageId(waterMeterData.getWaterMeterImage().getId());
         return waterMeterDataDTO;
     }
 
-    public WaterMeterDataDTO.PreviousWaterMeterDataDTO waterMeterDataToPreviousWaterMeterDataDTO(WaterMeterData waterMeterData) {
+    public WaterMeterDataDTO.PreviousWaterMeterDataDTO waterMeterDataToPreviousWaterMeterDataDTO(WaterMeterData waterMeterData, String domain, String filePath) {
         WaterMeterDataDTO.PreviousWaterMeterDataDTO waterMeterDataDTO = new WaterMeterDataDTO.PreviousWaterMeterDataDTO();
         waterMeterDataDTO.setId(waterMeterData.getId());
         waterMeterDataDTO.setPropertyName(waterMeterData.getPropertyUnit().getPropertyNumberOrName());
@@ -248,7 +255,8 @@ public class MeterReadingServiceImpl implements MeterReadingService {
         waterMeterDataDTO.setMeterReadingDate(waterMeterData.getMeterReadingDate());
         waterMeterDataDTO.setMonth(waterMeterData.getMonth());
         waterMeterDataDTO.setYear(waterMeterData.getYear());
-        waterMeterDataDTO.setImageName(waterMeterData.getWaterMeterImage().getName());
+        waterMeterDataDTO.setImageName(domain +"/image/"+ waterMeterData.getWaterMeterImage().getName());
+        waterMeterDataDTO.setImageId(waterMeterData.getWaterMeterImage().getId());
         return waterMeterDataDTO;
     }
 }
