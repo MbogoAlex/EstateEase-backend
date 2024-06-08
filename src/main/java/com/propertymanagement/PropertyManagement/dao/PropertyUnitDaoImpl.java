@@ -23,7 +23,7 @@ public class PropertyUnitDaoImpl implements PropertyUnitDao{
     @Override
     public PropertyUnit updateProperty(PropertyUnit propertyUnit) {
         entityManager.merge(propertyUnit);
-        return null;
+        return propertyUnit;
     }
 
     @Override

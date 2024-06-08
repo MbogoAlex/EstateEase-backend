@@ -13,7 +13,7 @@ public class PropertyUnitDTO {
     private String propertyDescription;
     private Double monthlyRent;
 
-    private Double latePaymentDailyPenalty;
+    private Boolean latePaymentDailyPenalty;
 
     private int propertyManagerId;
 

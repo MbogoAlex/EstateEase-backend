@@ -30,15 +30,24 @@ public class AmenityControllerImpl implements AmenityController{
     ) throws IOException {
         return buildResponse("amenity", amenityService.addAmenity(amenityRequestDTO, images), "Amenity added", HttpStatus.CREATED);
     }
+
     @PutMapping("amenity/{id}")
     @Override
-    public ResponseEntity<Response> updateAmenity(
+    public ResponseEntity<Response> updateAmenityWithoutImages(
+            @RequestBody AmenityRequestDTO amenityRequestDTO,
+            @PathVariable("id") int amenityId
+    ) {
+        return buildResponse("amenity", amenityService.updateAmenityWithoutImages(amenityRequestDTO, amenityId), "Amenity updated", HttpStatus.CREATED);
+    }
+
+    @PutMapping("amenity/{id}/images")
+    @Override
+    public ResponseEntity<Response> updateAmenityWithImages(
             @RequestPart("data") AmenityRequestDTO amenityRequestDTO,
             @RequestPart("images") MultipartFile[] images,
-            @RequestPart("oldimages") AmenityResponseDTO.AmenityResponseImage[] oldImages,
             @PathVariable("id") int amenityId
     ) throws IOException {
-        return buildResponse("amenity", amenityService.updateAmenity(amenityRequestDTO, images, oldImages, amenityId), "Amenity updated", HttpStatus.CREATED);
+        return buildResponse("amenity", amenityService.updateAmenityWithImages(amenityRequestDTO, images, amenityId), "Amenity updated", HttpStatus.CREATED);
     }
     @DeleteMapping("amenity/{id}")
     @Override
@@ -55,7 +64,15 @@ public class AmenityControllerImpl implements AmenityController{
     public ResponseEntity<Response> getAmenity(@PathVariable("id") int id) {
         return buildResponse("amenity", amenityService.getAmenity(id), "Amenity fetched", HttpStatus.OK);
     }
-    @DeleteMapping("amenity/id/image")
+    @GetMapping("amenity/filtered")
+    @Override
+    public ResponseEntity<Response> getFilteredAmenity(
+            @RequestParam(value = "value", required = false) String value
+    ) {
+        return buildResponse("amenities", amenityService.getFilteredAmenity(value), "Amenities fetched", HttpStatus.OK);
+    }
+
+    @DeleteMapping("amenity/{id}/image")
     @Override
     public ResponseEntity<Response> deleteImage(@PathVariable("id") int id) {
         return buildResponse("amenity", amenityService.deleteImage(id), "Image deleted", HttpStatus.OK);

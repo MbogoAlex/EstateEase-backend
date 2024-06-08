@@ -80,4 +80,14 @@ public class AmenityDaoImpl implements AmenityDao{
         query.setParameter("id", id);
         return query.getSingleResult();
     }
+
+    @Override
+    public List<Amenity> getFilteredAmenity(String value) {
+        TypedQuery<Amenity> query = entityManager.createQuery("from Amenity " +
+                "where :value is null OR amenityName like concat('%', :value, '%') " +
+                "OR :value is null OR providerName like concat('%', :value, '%') " +
+                "OR :value is null OR providerPhoneNumber like concat('%', :value, '%')", Amenity.class);
+        query.setParameter("value", value);
+        return query.getResultList();
+    }
 }

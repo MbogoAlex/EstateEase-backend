@@ -27,8 +27,8 @@ public class PropertyUnitControllerImpl implements PropertyUnitController {
     }
 
     @Override
-    @PutMapping("/propertyunit/propertyId={id}")
-    public ResponseEntity<Response> updateProperty(@RequestBody PropertyUnitDTO propertyUnitDTO, @PathVariable int propertyId) {
+    @PutMapping("/propertyunit/{id}")
+    public ResponseEntity<Response> updateProperty(@RequestBody PropertyUnitDTO propertyUnitDTO, @PathVariable("id") int propertyId) {
         return buildResponse("property", propertyUnitService.updateProperty(propertyUnitDTO, propertyId), "Updated successfully", HttpStatus.OK);
     }
 

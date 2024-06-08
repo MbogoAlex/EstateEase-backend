@@ -71,6 +71,7 @@ public class PropertyUnitServiceImpl implements PropertyUnitService{
         PropertyUnit propertyUnit = propertyUnitDao.getPropertyByPropertyId(propertyId);
         propertyUnit.setPropertyNumberOrName(propertyUnitDTO.getPropertyNumberOrName());
         propertyUnit.setPropertyDescription(propertyUnitDTO.getPropertyDescription());
+        propertyUnit.setMonthlyRent(propertyUnitDTO.getMonthlyRent());
         return mapPropertyToPropertyDto(propertyUnitDao.updateProperty(propertyUnit));
     }
     @Transactional

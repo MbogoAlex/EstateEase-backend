@@ -49,43 +49,32 @@ public class AmenityServiceImpl implements AmenityService{
         amenity.setAddedBy(amenityRequestDTO.getAddedBy());
         amenity.setPManagerId(amenityRequestDTO.getPropertyManagerId());
 
-        for(MultipartFile image : images) {
-            AmenityImage amenityImage = new AmenityImage();
-            String fileName = UUID.randomUUID() + "_" + image.getOriginalFilename().replace(" ", "");
-            String filePath = path + fileName;
-            File uploadFile = new File(filePath);
-            image.transferTo(uploadFile);
+        if(images != null) {
+            for(MultipartFile image : images) {
+                AmenityImage amenityImage = new AmenityImage();
+                String fileName = UUID.randomUUID() + "_" + image.getOriginalFilename().replace(" ", "");
+                String filePath = path + fileName;
+                File uploadFile = new File(filePath);
+                image.transferTo(uploadFile);
 
-            amenityImage.setName(fileName);
+                amenityImage.setName(fileName);
 
-            amenity.getImages().add(amenityImage);
-            amenityImage.setAmenity(amenity);
+                amenity.getImages().add(amenityImage);
+                amenityImage.setAmenity(amenity);
+            }
         }
 
         return mapAmenityToAmenityDTO(amenityDao.addAmenity(amenity), domain);
     }
     @Transactional
     @Override
-    public AmenityResponseDTO updateAmenity(AmenityRequestDTO amenityRequestDTO, MultipartFile[] images, AmenityResponseDTO.AmenityResponseImage[] oldImages, int amenityId) throws IOException {
+    public AmenityResponseDTO updateAmenityWithImages(AmenityRequestDTO amenityRequestDTO, MultipartFile[] images, int amenityId) throws IOException {
         Amenity amenity = amenityDao.getById(amenityId);
         Settings imagePath = settingsDao.findBySettingsKey("imagePath");
         String path = imagePath.getValue();
         Settings domainName = settingsDao.findBySettingsKey("domain");
         String domain = domainName.getValue();
 
-        for(AmenityResponseDTO.AmenityResponseImage image : oldImages) {
-            AmenityImage oldImage = amenityDao.getImage(image.getId());
-            String oldImagePath = path + oldImage.getName();
-            Path oldPath = Paths.get(oldImagePath);
-
-            try {
-                Files.delete(oldPath);
-                amenityDao.deleteImage(image.getId());
-            } catch (IOException e) {
-                System.err.println("Error deleting image: " + e.getMessage());
-            }
-
-        }
 
         amenity.setAmenityName(amenityRequestDTO.getAmenityName());
         amenity.setProviderName(amenityRequestDTO.getProviderName());
@@ -96,18 +85,42 @@ public class AmenityServiceImpl implements AmenityService{
         amenity.setAddedBy(amenityRequestDTO.getAddedBy());
         amenity.setPManagerId(amenityRequestDTO.getPropertyManagerId());
 
-        for(MultipartFile image : images) {
-            AmenityImage amenityImage = new AmenityImage();
-            String fileName = UUID.randomUUID() + "_" + image.getOriginalFilename().replace(" ", "");
-            String filePath = path + fileName;
-            File uploadFile = new File(filePath);
-            image.transferTo(uploadFile);
+        if(images.length >= 1) {
+            System.out.println("IMAGES LIST LENGTH: "+ images.length);
+            for(MultipartFile image : images) {
+                String fileName = UUID.randomUUID() + "_" + image.getOriginalFilename().replace(" ", "");
+                if(!fileName.endsWith("_")) {
+                    AmenityImage amenityImage = new AmenityImage();
+                    String filePath = path + fileName;
+                    File uploadFile = new File(filePath);
+                    image.transferTo(uploadFile);
 
-            amenityImage.setName(fileName);
+                    amenityImage.setName(fileName);
 
-            amenity.getImages().add(amenityImage);
-            amenityImage.setAmenity(amenity);
+                    amenity.getImages().add(amenityImage);
+                    amenityImage.setAmenity(amenity);
+                }
+
+            }
         }
+        return mapAmenityToAmenityDTO(amenityDao.updateAmenity(amenity), domain);
+    }
+    @Transactional
+    @Override
+    public AmenityResponseDTO updateAmenityWithoutImages(AmenityRequestDTO amenityRequestDTO, int amenityId) {
+        Amenity amenity = amenityDao.getById(amenityId);
+        Settings domainName = settingsDao.findBySettingsKey("domain");
+        String domain = domainName.getValue();
+
+
+        amenity.setAmenityName(amenityRequestDTO.getAmenityName());
+        amenity.setProviderName(amenityRequestDTO.getProviderName());
+        amenity.setAmenityDescription(amenityRequestDTO.getAmenityDescription());
+        amenity.setProviderPhoneNumber(amenityRequestDTO.getProviderPhoneNumber());
+        amenity.setProviderEmail(amenityRequestDTO.getProviderEmail());
+        amenity.setAddedAt(LocalDateTime.now());
+        amenity.setAddedBy(amenityRequestDTO.getAddedBy());
+        amenity.setPManagerId(amenityRequestDTO.getPropertyManagerId());
         return mapAmenityToAmenityDTO(amenityDao.updateAmenity(amenity), domain);
     }
 
@@ -126,6 +139,18 @@ public class AmenityServiceImpl implements AmenityService{
     public AmenityResponseDTO getAmenity(int id) {
         Settings settings = settingsDao.findBySettingsKey("domain");
         return mapAmenityToAmenityDTO(amenityDao.getAmenity(id), settings.getValue());
+    }
+
+    @Override
+    public List<AmenityResponseDTO> getFilteredAmenity(String value) {
+        List<AmenityResponseDTO> mappedAmenities = new ArrayList<>();
+        List<Amenity> amenities = amenityDao.getFilteredAmenity(value);
+        Settings settings = settingsDao.findBySettingsKey("domain");
+
+        for(Amenity amenity : amenities) {
+            mappedAmenities.add(mapAmenityToAmenityDTO(amenity, settings.getValue()));
+        }
+        return mappedAmenities;
     }
 
     @Transactional
@@ -150,7 +175,7 @@ public class AmenityServiceImpl implements AmenityService{
 
         return amenityDao.deleteAmenity(amenityId);
     }
-
+    @Transactional
     @Override
     public String deleteImage(int imageId) {
         Settings imagePath = settingsDao.findBySettingsKey("imagePath");

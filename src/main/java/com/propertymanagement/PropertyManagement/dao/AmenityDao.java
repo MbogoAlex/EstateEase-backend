@@ -21,4 +21,6 @@ public interface AmenityDao {
     Amenity getAmenity(int id);
 
     AmenityImage getAmenityImage(int id);
+
+    List<Amenity> getFilteredAmenity(String value);
 }

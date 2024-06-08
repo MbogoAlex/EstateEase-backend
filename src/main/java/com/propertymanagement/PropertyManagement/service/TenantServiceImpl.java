@@ -1,9 +1,6 @@
 package com.propertymanagement.PropertyManagement.service;
 
-import com.propertymanagement.PropertyManagement.dao.MeterReadingDao;
-import com.propertymanagement.PropertyManagement.dao.PManagerDao;
-import com.propertymanagement.PropertyManagement.dao.PropertyUnitDao;
-import com.propertymanagement.PropertyManagement.dao.TenantDao;
+import com.propertymanagement.PropertyManagement.dao.*;
 import com.propertymanagement.PropertyManagement.dto.*;
 import com.propertymanagement.PropertyManagement.dto.tenantResponse.TenantPropertyDTO;
 import com.propertymanagement.PropertyManagement.dto.tenantResponse.TenantResponseDTO;
@@ -31,21 +28,25 @@ import java.util.*;
 @Service
 public class TenantServiceImpl implements TenantService{
 
-    private PManagerDao pmAppDao;
-    private TenantDao tenantDao;
-    private PropertyUnitDao propertyUnitDao;
-    private MeterReadingDao meterReadingDao;
+    private final PManagerDao pmAppDao;
+    final TenantDao tenantDao;
+    private final PropertyUnitDao propertyUnitDao;
+    private final MeterReadingDao meterReadingDao;
+
+    private final PenaltyDao penaltyDao;
     @Autowired
     public TenantServiceImpl(
             PManagerDao pmAppDao,
             TenantDao tenantDao,
             PropertyUnitDao propertyUnitDao,
-            MeterReadingDao meterReadingDao
+            MeterReadingDao meterReadingDao,
+            PenaltyDao penaltyDao
     ) {
         this.pmAppDao = pmAppDao;
         this.tenantDao = tenantDao;
         this.propertyUnitDao = propertyUnitDao;
         this.meterReadingDao = meterReadingDao;
+        this.penaltyDao = penaltyDao;
     }
     @Transactional
     @Override
@@ -308,6 +309,7 @@ public class TenantServiceImpl implements TenantService{
             tenantDao.updateRentPaymentRow(rentPayment);
             rentPaymentDetailsDTOS.add(mapRentPaymentsToRentPaymentsDetailsDTO(rentPayment));
         }
+        penaltyDao.activatePenalty(2);
         return rentPaymentDetailsDTOS;
     }
     @Transactional
@@ -323,7 +325,7 @@ public class TenantServiceImpl implements TenantService{
             processed.add(rentPayment);
             rentPaymentDetailsDTOS.add(mapRentPaymentsToRentPaymentsDetailsDTO(rentPayment));
         }
-
+        penaltyDao.deactivatePenalty(2);
         return rentPaymentDetailsDTOS;
     }
 

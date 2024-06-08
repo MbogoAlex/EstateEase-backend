@@ -11,11 +11,13 @@ import java.util.List;
 public interface AmenityService {
     AmenityResponseDTO addAmenity(AmenityRequestDTO amenityRequestDTO, MultipartFile[] images) throws IOException;
 
-    AmenityResponseDTO updateAmenity(AmenityRequestDTO amenityRequestDTO, MultipartFile[] images, AmenityResponseDTO.AmenityResponseImage[] oldImages, int amenityId) throws IOException;
+    AmenityResponseDTO updateAmenityWithImages(AmenityRequestDTO amenityRequestDTO, MultipartFile[] images, int amenityId) throws IOException;
+    AmenityResponseDTO updateAmenityWithoutImages(AmenityRequestDTO amenityRequestDTO, int amenityId);
 
     List<AmenityResponseDTO> getAllAmenities();
 
     AmenityResponseDTO getAmenity(int id);
+    List<AmenityResponseDTO> getFilteredAmenity(String value);
 
     String deleteAmenity(int amenityId);
 
