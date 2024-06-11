@@ -38,7 +38,7 @@ public class PropertyUnitServiceImpl implements PropertyUnitService{
         System.out.println("ADDING PROPERTY, PMANAGER ID:" +propertyUnitDTO.getPropertyManagerId());
         PropertyUnit propertyUnit = new PropertyUnit();
         // set no. of rooms
-        propertyUnit.setNumberOfRooms(propertyUnitDTO.getNumberOfRooms());
+        propertyUnit.setRooms(propertyUnitDTO.getRooms());
 
         // set property no. or name
         propertyUnit.setPropertyNumberOrName(propertyUnitDTO.getPropertyNumberOrName());
@@ -182,7 +182,7 @@ public class PropertyUnitServiceImpl implements PropertyUnitService{
     PropertyUnitResponseDTO mapPropertyToPropertyDto(PropertyUnit propertyUnit) {
         PropertyUnitResponseDTO propertyUnitResponseDTO = new PropertyUnitResponseDTO();
         propertyUnitResponseDTO.setPropertyUnitId(propertyUnit.getPropertyUnitId());
-        propertyUnitResponseDTO.setNumberOfRooms(propertyUnit.getNumberOfRooms());
+        propertyUnitResponseDTO.setRooms(propertyUnit.getRooms());
         propertyUnitResponseDTO.setPropertyNumberOrName(propertyUnit.getPropertyNumberOrName());
         propertyUnitResponseDTO.setPropertyDescription(propertyUnit.getPropertyDescription());
         propertyUnitResponseDTO.setMonthlyRent(propertyUnit.getMonthlyRent());
@@ -218,7 +218,7 @@ public class PropertyUnitServiceImpl implements PropertyUnitService{
         List<WaterMeterDataDTO> meterReadings = new ArrayList<>();
         PropertyUnitResponseDTO propertyUnitResponseDTO = new PropertyUnitResponseDTO();
         propertyUnitResponseDTO.setPropertyUnitId(propertyUnit.getPropertyUnitId());
-        propertyUnitResponseDTO.setNumberOfRooms(propertyUnit.getNumberOfRooms());
+        propertyUnitResponseDTO.setRooms(propertyUnit.getRooms());
         propertyUnitResponseDTO.setPropertyNumberOrName(propertyUnit.getPropertyNumberOrName());
         propertyUnitResponseDTO.setPropertyDescription(propertyUnit.getPropertyDescription());
         propertyUnitResponseDTO.setMonthlyRent(propertyUnit.getMonthlyRent());

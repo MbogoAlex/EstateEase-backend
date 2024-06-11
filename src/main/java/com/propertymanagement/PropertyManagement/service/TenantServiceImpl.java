@@ -472,7 +472,7 @@ public class TenantServiceImpl implements TenantService{
             paymentInfo.setTransactionId(rentPayment.getTransactionId());
             paymentInfo.setYear(rentPayment.getYear());
             paymentInfo.setPropertyNumberOrName(tenant.getPropertyUnit().getPropertyNumberOrName());
-            paymentInfo.setNumberOfRooms(tenant.getPropertyUnit().getNumberOfRooms());
+            paymentInfo.setRooms(tenant.getPropertyUnit().getRooms());
             paymentInfo.setTenantId(tenant.getTenantId());
             paymentInfo.setEmail(tenant.getEmail());
             paymentInfo.setFullName(tenant.getFullName());
@@ -487,7 +487,7 @@ public class TenantServiceImpl implements TenantService{
 
         TenantPropertyDTO tenantPropertyDTO = new TenantPropertyDTO();
         tenantPropertyDTO.setPropertyUnitId(tenant.getPropertyUnit().getPropertyUnitId());
-        tenantPropertyDTO.setNumberOfRooms(tenant.getPropertyUnit().getNumberOfRooms());
+        tenantPropertyDTO.setRooms(tenant.getPropertyUnit().getRooms());
         tenantPropertyDTO.setPropertyNumberOrName(tenant.getPropertyUnit().getPropertyNumberOrName());
         tenantPropertyDTO.setPropertyDescription(tenant.getPropertyUnit().getPropertyDescription());
         tenantPropertyDTO.setMonthlyRent(tenant.getPropertyUnit().getMonthlyRent());

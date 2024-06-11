@@ -49,7 +49,7 @@ public class TenantResponseDTO {
         private String transactionId;
         private Year year;
         private String propertyNumberOrName;
-        private Integer numberOfRooms;
+        private String rooms;
         private Integer tenantId;
         private String email;
         private String fullName;

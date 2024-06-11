@@ -76,7 +76,7 @@ public class PManagerControllerImpl implements PManagerController {
     public ResponseEntity<Response> getRentPaymentDetailedInfo(
             @RequestParam(value = "month") String month,
             @RequestParam(value = "year") String year,
-            @RequestParam(value = "rooms", required = false) Integer rooms,
+            @RequestParam(value = "rooms", required = false) String rooms,
             @RequestParam(value = "roomName", required = false) String roomName,
             @RequestParam(value = "tenantName", required = false) String tenantName
             ) {

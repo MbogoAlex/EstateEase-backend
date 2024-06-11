@@ -19,8 +19,8 @@ public class PropertyUnit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "property_unit_id")
     private int propertyUnitId;
-    @Column(name = "number_of_rooms")
-    private int numberOfRooms;
+    @Column(name = "rooms")
+    private String rooms;
     @Column(name = "property_number_or_name", unique = true)
     private String propertyNumberOrName;
     @Column(name = "property_description")

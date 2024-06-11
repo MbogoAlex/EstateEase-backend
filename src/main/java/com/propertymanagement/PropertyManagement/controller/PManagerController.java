@@ -28,7 +28,7 @@ public interface PManagerController {
 
     ResponseEntity<Response> getRentPayments(String month, String year);
 
-    ResponseEntity<Response> getRentPaymentDetailedInfo(String month, String year, Integer rooms, String roomName, String tenantName);
+    ResponseEntity<Response> getRentPaymentDetailedInfo(String month, String year, String rooms, String roomName, String tenantName);
 
     ResponseEntity<Response> getDetailedRentPayments(String month, String year, String roomName, Integer rooms, String tenantName, Integer tenantId, Boolean rentPaymentStatus, Boolean paidLate, Boolean tenantActive);
 

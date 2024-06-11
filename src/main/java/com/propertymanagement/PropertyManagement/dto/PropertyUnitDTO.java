@@ -8,7 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @ToString
 public class PropertyUnitDTO {
-    private int numberOfRooms;
+    private String rooms;
     private String propertyNumberOrName;
     private String propertyDescription;
     private Double monthlyRent;

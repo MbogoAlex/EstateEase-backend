@@ -136,7 +136,7 @@ public class PManagerServiceImpl implements PManagerService {
     }
 
     @Override
-    public List<RentPaymentDetailsDTO> getRentPaymentDetailedInfo(String month, String year, Integer rooms, String roomName, String tenantName) {
+    public List<RentPaymentDetailsDTO> getRentPaymentDetailedInfo(String month, String year, String rooms, String roomName, String tenantName) {
 
         List<RentPaymentDetailsDTO> rentPaymentsDTO = new ArrayList<>();
         List<RentPayment> rentPayments = pManagerDao.getRentPaymentOverview(month, year);
@@ -152,7 +152,7 @@ public class PManagerServiceImpl implements PManagerService {
                 listToFilter = rentPayments;
             }
             for(RentPayment rentPayment : listToFilter) {
-                if(rentPayment.getTenant().getPropertyUnit().getNumberOfRooms() == rooms) {
+                if(rentPayment.getTenant().getPropertyUnit().getRooms().equalsIgnoreCase(rooms)) {
                     System.out.println("ADDED ROOM");
                     processedData.add(rentPayment);
 
@@ -399,7 +399,7 @@ public class PManagerServiceImpl implements PManagerService {
         rentPaymentDetailsDTO.setPaidAt(rentPayment.getPaidAt());
         rentPaymentDetailsDTO.setPaidLate(rentPayment.getPaidLate());
         rentPaymentDetailsDTO.setUnitName(rentPayment.getTenant().getPropertyUnit().getPropertyNumberOrName());
-        rentPaymentDetailsDTO.setNumberOfRooms(rentPayment.getTenant().getPropertyUnit().getNumberOfRooms());
+        rentPaymentDetailsDTO.setRooms(rentPayment.getTenant().getPropertyUnit().getRooms());
         tenantDataDTO.setTenantId(rentPayment.getTenant().getTenantId());
         tenantDataDTO.setFullName(rentPayment.getTenant().getFullName());
         tenantDataDTO.setNationalIdOrPassportNumber(rentPayment.getTenant().getNationalIdOrPassportNumber());
