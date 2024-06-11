@@ -8,7 +8,10 @@ import jakarta.persistence.TypedQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 @Repository
 public class PManagerDaoImpl implements PManagerDao {
 
@@ -135,37 +138,33 @@ public class PManagerDaoImpl implements PManagerDao {
     }
 
     @Override
-    public List<DetailedRentPaymentInfoDTO> getDetailedRentPayments(String month, String year, String propertyNumberOrName, Integer numberOfRooms, String tenantName, Integer tenantId, Boolean rentPaymentStatus, Boolean paidLate, Boolean tenantActive) {
-        String previousMonth = "";
-        String waterDataYear = year;
+    public List<DetailedRentPaymentInfoDTO> getDetailedRentPayments(
+            String month,
+            String year,
+            String propertyNumberOrName,
+            Integer numberOfRooms,
+            String tenantName,
+            Integer tenantId,
+            Boolean rentPaymentStatus,
+            Boolean paidLate,
+            Boolean tenantActive) {
 
-        if(month.equalsIgnoreCase("january")) {
-            previousMonth = "December";
-            waterDataYear = String.valueOf((Integer.parseInt(year) - 1));
-        } else if(month.equalsIgnoreCase("february")) {
-            previousMonth = "January";
-        } else if(month.equalsIgnoreCase("march")) {
-            previousMonth = "February";
-        } else if(month.equalsIgnoreCase("april")) {
-            previousMonth = "March";
-        } else if(month.equalsIgnoreCase("may")) {
-            previousMonth = "April";
-        } else if(month.equalsIgnoreCase("june")) {
-            previousMonth = "May";
-        } else if(month.equalsIgnoreCase("july")) {
-            previousMonth = "June";
-        } else if(month.equalsIgnoreCase("august")) {
-            previousMonth = "July";
-        } else if(month.equalsIgnoreCase("september")) {
-            previousMonth = "August";
-        } else if(month.equalsIgnoreCase("october")) {
-            previousMonth = "September";
-        } else if(month.equalsIgnoreCase("november")) {
-            previousMonth = "October";
-        } else if(month.equalsIgnoreCase("december")) {
-            previousMonth = "November";
-        }
+        Map<String, String> monthMap = new HashMap<>();
+        monthMap.put("january", "December");
+        monthMap.put("february", "January");
+        monthMap.put("march", "February");
+        monthMap.put("april", "March");
+        monthMap.put("may", "April");
+        monthMap.put("june", "May");
+        monthMap.put("july", "June");
+        monthMap.put("august", "July");
+        monthMap.put("september", "August");
+        monthMap.put("october", "September");
+        monthMap.put("november", "October");
+        monthMap.put("december", "November");
 
+        String previousMonth = monthMap.containsKey(month.toLowerCase()) ? monthMap.get(month.toLowerCase()) : "";
+        String waterDataYear = "january".equalsIgnoreCase(month) ? String.valueOf(Integer.parseInt(year) - 1) : year;
 
         String stringQuery = "select new DetailedRentPaymentInfoDTO(" +
                 "rp.rentPaymentTblId, " +
@@ -189,28 +188,28 @@ public class PManagerDaoImpl implements PManagerDao {
                 "t.phoneNumber, " +
                 "t.tenantAddedAt, " +
                 "t.tenantActive, " +
-                "wmd.waterUnits, " +
-                "wmd.pricePerUnit, " +
-                "wmd.meterReadingDate, " +
-                "wmi.name)" +
+                "max(wmd.waterUnits), " +
+                "max(wmd.pricePerUnit), " +
+                "max(wmd.meterReadingDate), " +
+                "max(wmi.name)) " +
                 "from RentPayment rp " +
                 "join rp.tenant t " +
                 "join t.propertyUnit pu " +
                 "left join WaterMeterData wmd on :previousMonth = wmd.month and :waterDataYear = wmd.year " +
                 "left join wmd.waterMeterImage wmi " +
                 "where MONTHNAME(rp.dueDate) = :month " +
-                "and  YEAR(rp.dueDate) = :formattedYear " +
+                "and YEAR(rp.dueDate) = :formattedYear " +
                 "and (:tenantName is null or t.fullName like concat('%', :tenantName, '%')) " +
                 "and (:tenantId is null or t.tenantId = :tenantId) " +
                 "and (:numberOfRooms is null or pu.numberOfRooms = :numberOfRooms) " +
                 "and (:propertyNumberOrName is null or pu.propertyNumberOrName like concat('%', :propertyNumberOrName, '%')) " +
                 "and (:rentPaymentStatus is null or rp.paymentStatus = :rentPaymentStatus) " +
                 "and (:paidLate is null or rp.paidLate = :paidLate) " +
-                "and (:tenantActive is null or t.tenantActive = :tenantActive)";
+                "and (:tenantActive is null or t.tenantActive = :tenantActive) " +
+                "group by rp.rentPaymentTblId, rp.dueDate, rp.month, rp.monthlyRent, rp.paidAmount, rp.paidAt, rp.paidLate, rp.paymentStatus, rp.penaltyActive, rp.penaltyPerDay, rp.transactionId, rp.year, pu.propertyNumberOrName, pu.numberOfRooms, t.tenantId, t.email, t.fullName, t.nationalIdOrPassportNumber, t.phoneNumber, t.tenantAddedAt, t.tenantActive";
 
         TypedQuery<DetailedRentPaymentInfoDTO> query = entityManager.createQuery(stringQuery, DetailedRentPaymentInfoDTO.class);
         query.setParameter("month", month);
-//        query.setParameter("year", year);
         query.setParameter("previousMonth", previousMonth);
         query.setParameter("waterDataYear", waterDataYear);
         query.setParameter("formattedYear", Integer.parseInt(year));
@@ -224,5 +223,7 @@ public class PManagerDaoImpl implements PManagerDao {
 
         return query.getResultList();
     }
+
+
 
 }

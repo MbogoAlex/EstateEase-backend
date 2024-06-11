@@ -34,6 +34,7 @@ public class TenantServiceImpl implements TenantService{
     private final MeterReadingDao meterReadingDao;
 
     private final PenaltyDao penaltyDao;
+
     @Autowired
     public TenantServiceImpl(
             PManagerDao pmAppDao,
@@ -52,6 +53,7 @@ public class TenantServiceImpl implements TenantService{
     @Override
     public TenantResponseDTO addNewTenant(TenantDTO tenantDTO) {
         Tenant tenant = new Tenant();
+        Penalty penalty = penaltyDao.getPenalty(2);
         // set tenant name
         tenant.setFullName(tenantDTO.getFullName());
 
@@ -87,8 +89,8 @@ public class TenantServiceImpl implements TenantService{
         rentPayment.setMonth(LocalDateTime.now().getMonth());
         rentPayment.setYear(Year.of(LocalDateTime.now().getYear()));
         rentPayment.setDueDate(LocalDate.now());
-        rentPayment.setPenaltyPerDay(tenantDTO.getPenaltyPerDay());
-        rentPayment.setPenaltyActive(true);
+        rentPayment.setPenaltyPerDay(penalty.getCost());
+        rentPayment.setPenaltyActive(penalty.getStatus());
         rentPayment.setMonthlyRent(propertyUnit.getMonthlyRent());
         rentPayment.setPaymentStatus(false);
 
@@ -181,6 +183,8 @@ public class TenantServiceImpl implements TenantService{
 
         List<Tenant> tenants = tenantDao.getActiveTenants();
 
+        Penalty penalty = penaltyDao.getPenalty(2);
+
 
         for(Tenant tenant : tenants) {
             RentPayment rentPayment = new RentPayment();
@@ -195,8 +199,8 @@ public class TenantServiceImpl implements TenantService{
             rentPayment.setMonthlyRent(tenant.getPropertyUnit().getMonthlyRent());
 
             // set penalty
-            rentPayment.setPenaltyActive(rentPaymentDTO.getPenaltyActive());
-            rentPayment.setPenaltyPerDay(rentPaymentDTO.getPenaltyPerDay());
+            rentPayment.setPenaltyActive(penalty.getStatus());
+            rentPayment.setPenaltyPerDay(penalty.getCost());
 
 
             // set rent payment status
@@ -302,10 +306,11 @@ public class TenantServiceImpl implements TenantService{
     public List<RentPaymentDetailsDTO> activateLatePaymentPenaltyForMultipleTenants(RentPenaltyDTO rentPenaltyDTO, String month, String year) {
         List<RentPaymentDetailsDTO> rentPaymentDetailsDTOS = new ArrayList<>();
         List<RentPayment> rentPayments = tenantDao.getRentPaymentRows(month, year);
+        Penalty penalty = penaltyDao.getPenalty(2);
 
         for(RentPayment rentPayment : rentPayments) {
             rentPayment.setPenaltyActive(true);
-            rentPayment.setPenaltyPerDay(rentPenaltyDTO.getPenaltyPerDay());
+            rentPayment.setPenaltyPerDay(penalty.getCost());
             tenantDao.updateRentPaymentRow(rentPayment);
             rentPaymentDetailsDTOS.add(mapRentPaymentsToRentPaymentsDetailsDTO(rentPayment));
         }
@@ -431,7 +436,7 @@ public class TenantServiceImpl implements TenantService{
             WaterMeterDataDTO waterMeterDataDTO = new WaterMeterDataDTO();
             waterMeterDataDTO.setPropertyName(waterMeterData.getPropertyUnit().getPropertyNumberOrName());
             waterMeterDataDTO.setTenantName(waterMeterData.getTenant().getFullName());
-            waterMeterDataDTO.setWaterUnits(waterMeterData.getWaterUnits());
+            waterMeterDataDTO.setWaterUnitsReading(waterMeterData.getWaterUnits());
             waterMeterDataDTO.setPricePerUnit(waterMeterData.getPricePerUnit());
             waterMeterDataDTO.setMeterReadingDate(waterMeterData.getMeterReadingDate());
             waterMeterDataDTO.setMonth(waterMeterData.getMonth());
@@ -537,7 +542,7 @@ public class TenantServiceImpl implements TenantService{
             WaterMeterDataDTO waterMeterDataDTO = new WaterMeterDataDTO();
             waterMeterDataDTO.setPropertyName(waterMeterData.getPropertyUnit().getPropertyNumberOrName());
             waterMeterDataDTO.setTenantName(rentPayment.getTenant().getFullName());
-            waterMeterDataDTO.setWaterUnits(waterMeterData.getWaterUnits());
+            waterMeterDataDTO.setWaterUnitsReading(waterMeterData.getWaterUnits());
             waterMeterDataDTO.setMeterReadingDate(waterMeterData.getMeterReadingDate());
             waterMeterDataDTO.setImageName(waterMeterData.getWaterMeterImage().getName());
             rentPaymentDetailsDTO.setWaterMeterDataDTO(waterMeterDataDTO);

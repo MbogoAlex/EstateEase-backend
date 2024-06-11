@@ -14,7 +14,7 @@ public interface MeterReadingService {
 
     WaterMeterDataDTO updateMeterReading(MeterReadingDTO meterReadingDTO, MultipartFile image, int oldImageId) throws IOException;
 
-    List<WaterMeterDataDTO> getMeterWaterReadings(String month, String year, Boolean meterReadingTaken, String tenantName, String propertyName);
+    List<WaterMeterDataDTO> getMeterWaterReadings(String month, String year, Boolean meterReadingTaken, String tenantName, String propertyName, String role);
 
     WaterMeterDataDTO getWaterMeterDataById(int id);
 

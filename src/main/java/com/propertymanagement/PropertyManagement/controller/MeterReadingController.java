@@ -16,7 +16,7 @@ public interface MeterReadingController {
 
     ResponseEntity<Response> initializeMeterReading();
 
-    ResponseEntity<Response> getMeterWaterReadings(String month, String year, Boolean meterReadingTaken, String tenantName, String propertyName);
+    ResponseEntity<Response> getMeterWaterReadings(String month, String year, Boolean meterReadingTaken, String tenantName, String propertyName, String role);
 
     ResponseEntity<Response> getWaterMeterDataById(int id);
 

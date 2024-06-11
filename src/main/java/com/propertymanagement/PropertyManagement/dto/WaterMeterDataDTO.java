@@ -14,7 +14,7 @@ public class WaterMeterDataDTO {
     private Integer id;
     private String propertyName;
     private String tenantName;
-    private Double waterUnits;
+    private Double waterUnitsReading;
     private Double pricePerUnit;
     private LocalDateTime meterReadingDate;
     private String month;
@@ -30,7 +30,7 @@ public class WaterMeterDataDTO {
         private Integer id;
         private String propertyName;
         private String tenantName;
-        private Double waterUnits;
+        private Double waterUnitsReading;
         private Double pricePerUnit;
         private LocalDateTime meterReadingDate;
         private String month;

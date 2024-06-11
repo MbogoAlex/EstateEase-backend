@@ -204,7 +204,7 @@ public class PropertyUnitServiceImpl implements PropertyUnitService{
                 WaterMeterDataDTO waterMeterDataDTO = new WaterMeterDataDTO();
                 waterMeterDataDTO.setPropertyName(waterMeterData.getPropertyUnit().getPropertyNumberOrName());
                 waterMeterDataDTO.setTenantName(tenant.getFullName());
-                waterMeterDataDTO.setWaterUnits(waterMeterData.getWaterUnits());
+                waterMeterDataDTO.setWaterUnitsReading(waterMeterData.getWaterUnits());
                 waterMeterDataDTO.setMeterReadingDate(waterMeterData.getMeterReadingDate());
                 waterMeterDataDTO.setImageName(waterMeterData.getWaterMeterImage().getName());
             }
@@ -229,7 +229,7 @@ public class PropertyUnitServiceImpl implements PropertyUnitService{
                 WaterMeterDataDTO waterMeterDataDTO = new WaterMeterDataDTO();
                 waterMeterDataDTO.setPropertyName(propertyUnit.getPropertyNumberOrName());
                 waterMeterDataDTO.setTenantName(tenant.getFullName());
-                waterMeterDataDTO.setWaterUnits(waterMeterData.getWaterUnits());
+                waterMeterDataDTO.setWaterUnitsReading(waterMeterData.getWaterUnits());
                 waterMeterDataDTO.setPricePerUnit(waterMeterData.getPricePerUnit());
                 waterMeterDataDTO.setMeterReadingDate(waterMeterData.getMeterReadingDate());
                 waterMeterDataDTO.setMonth(waterMeterData.getMonth());

@@ -26,10 +26,10 @@ public class PenaltyControllerImpl implements PenaltyController{
     public ResponseEntity<Response> addPenalty(@RequestBody Penalty penalty) {
         return buildResponse("penalty", penaltyService.addPenalty(penalty), "Penalty added", HttpStatus.CREATED);
     }
-    @PutMapping("penalty")
+    @PutMapping("penalty/{id}")
     @Override
-    public ResponseEntity<Response> updatePenalty(@RequestBody Penalty penalty) {
-        return buildResponse("penalty", penaltyService.updatePenalty(penalty), "Penalty updated", HttpStatus.CREATED);
+    public ResponseEntity<Response> updatePenalty(@RequestBody Penalty penalty, @PathVariable("id") int id) {
+        return buildResponse("penalty", penaltyService.updatePenalty(penalty, id), "Penalty updated", HttpStatus.CREATED);
     }
     @GetMapping("penalty/{id}")
     @Override

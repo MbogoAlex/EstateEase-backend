@@ -107,6 +107,7 @@ public class TenantDaoImpl implements TenantDao{
 
     @Override
     public List<DetailedRentPaymentInfoDTO> getRentPaymentRowsByTenantId(Integer tenantId, String month, Integer year, String roomName, Integer rooms, String tenantName, Boolean rentPaymentStatus, Boolean paidLate, Boolean tenantActive) {
+
         String stringQuery = "select new DetailedRentPaymentInfoDTO(" +
                 "rp.rentPaymentTblId, " +
                 "rp.dueDate, " +
@@ -128,10 +129,16 @@ public class TenantDaoImpl implements TenantDao{
                 "t.nationalIdOrPassportNumber, " +
                 "t.phoneNumber, " +
                 "t.tenantAddedAt, " +
-                "t.tenantActive) " +
+                "t.tenantActive, " +
+                "wmd.waterUnits, " +
+                "wmd.pricePerUnit, " +
+                "wmd.meterReadingDate, " +
+                "wmi.name) " +
                 "from RentPayment rp " +
                 "join rp.tenant t " +
                 "join t.propertyUnit pu " +
+                "left join WaterMeterData wmd on :previousMonth = wmd.month and :waterDataYear = wmd.year " +
+                "left join wmd.waterMeterImage wmi " +
                 "where t.tenantId = :tenantId " +
                 "and (:month is null or :month = '' or MONTHNAME(rp.dueDate) = :month)" +
                 "and (:year is null or YEAR(rp.dueDate) = :year)" +
@@ -145,6 +152,8 @@ public class TenantDaoImpl implements TenantDao{
         TypedQuery<DetailedRentPaymentInfoDTO> query = entityManager.createQuery(stringQuery, DetailedRentPaymentInfoDTO.class);
         query.setParameter("month", month);
         query.setParameter("year", year);
+        query.setParameter("previousMonth", month);
+        query.setParameter("waterDataYear", month);
         query.setParameter("tenantName", tenantName);
         query.setParameter("tenantId", tenantId);
         query.setParameter("numberOfRooms", rooms);

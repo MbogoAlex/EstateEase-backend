@@ -47,12 +47,14 @@ public class MeterReadingControllerImpl implements MeterReadingController{
     @GetMapping("meterreading/all")
     @Override
     public ResponseEntity<Response> getMeterWaterReadings(
-            @RequestParam("month") String month,
-            @RequestParam("year") String year,
-            @RequestParam("meterReadingTaken") Boolean meterReadingTaken,
+            @RequestParam(value = "month", required = false) String month,
+            @RequestParam(value = "year", required = false) String year,
+            @RequestParam(value = "meterReadingTaken", required = false) Boolean meterReadingTaken,
             @RequestParam(value = "tenantName", required = false) String tenantName,
-            @RequestParam(value = "propertyName", required = false) String propertyName) {
-        return buildResponse("waterMeter", meterReadingService.getMeterWaterReadings(month, year, meterReadingTaken, tenantName, propertyName), "Fetching successful", HttpStatus.OK);
+            @RequestParam(value = "propertyName", required = false) String propertyName,
+            @RequestParam(value = "role", required = false) String role
+            ) {
+        return buildResponse("waterMeter", meterReadingService.getMeterWaterReadings(month, year, meterReadingTaken, tenantName, propertyName, role), "Fetching successful", HttpStatus.OK);
     }
     @GetMapping("meterreading/id={id}")
     @Override

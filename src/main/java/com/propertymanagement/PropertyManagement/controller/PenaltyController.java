@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 
 public interface PenaltyController {
     ResponseEntity<Response> addPenalty(Penalty penalty);
-    ResponseEntity<Response> updatePenalty(Penalty penalty);
+    ResponseEntity<Response> updatePenalty(Penalty penalty, int id);
 
     ResponseEntity<Response> getPenalty(int id);
     ResponseEntity<Response> removePenalty(int id);
