@@ -5,6 +5,9 @@ import net.sf.jasperreports.engine.JRException;
 import org.springframework.http.ResponseEntity;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.Map;
 
 public interface TenantController {
     // add new tenant
@@ -26,7 +29,7 @@ public interface TenantController {
 
     // update rent payment
 
-    ResponseEntity<Response> payRent(RentPaymentRequestDTO rentPaymentRequestDTO, int rentPaymentTblId);
+    ResponseEntity<Response> payRent(RentPaymentRequestDTO rentPaymentRequestDTO, int rentPaymentTblId) throws URISyntaxException, IOException, InterruptedException;
 
     // archive tenant
     ResponseEntity<Response> archiveTenant(int tenantId, int propertyId);
@@ -53,9 +56,13 @@ public interface TenantController {
     ResponseEntity<Response> deActivateLatePaymentPenaltyForMultipleTenants(String month, String year);
 
     // get rent payment rows by tenant ID
-    ResponseEntity<Response> getRentPaymentRowsByTenantId(Integer tenantId, String month, Integer year, String roomName, Integer rooms, String tenantName, Boolean rentPaymentStatus, Boolean paidLate, Boolean tenantActive) throws JRException;
+    ResponseEntity<Response> getRentPaymentRowsByTenantId(Integer tenantId, String month, Integer year, String roomName, String rooms, String tenantName, Boolean rentPaymentStatus, Boolean paidLate, Boolean tenantActive) throws JRException;
 
     // generate rent payments report
-    ResponseEntity<Response> generateRentPaymentsReport(Integer tenantId, String month, Integer year, String roomName, Integer rooms, String tenantName, Boolean rentPaymentStatus, Boolean paidLate, Boolean tenantActive) throws JRException;
+    ResponseEntity<Response> generateRentPaymentsReport(Integer tenantId, String month, Integer year, String roomName, String rooms, String tenantName, Boolean rentPaymentStatus, Boolean paidLate, Boolean tenantActive) throws JRException;
+
+    ResponseEntity<?> handleCallback(Map<String, Object> mpesaResponse);
+
+    ResponseEntity<?> checkPaymentStatus(int id);
 
 }

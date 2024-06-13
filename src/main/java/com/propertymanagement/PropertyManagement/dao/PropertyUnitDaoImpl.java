@@ -74,8 +74,8 @@ public class PropertyUnitDaoImpl implements PropertyUnitDao{
     }
 
     @Override
-    public List<PropertyUnit> fetchFilteredUnits(String name, Integer rooms, Boolean assignmentStatus) {
-        String queryString = "from PropertyUnit where (:propertyNumberOrName is null or propertyNumberOrName = :propertyNumberOrName or propertyNumberOrName like concat('%', :propertyNumberOrName, '%')) and (:numberOfRooms is null or numberOfRooms = :numberOfRooms) and (propertyAssignmentStatus = :propertyAssignmentStatus)";
+    public List<PropertyUnit> fetchFilteredUnits(String name, String rooms, Boolean assignmentStatus) {
+        String queryString = "from PropertyUnit where (:propertyNumberOrName is null or propertyNumberOrName = :propertyNumberOrName or propertyNumberOrName like concat('%', :propertyNumberOrName, '%')) and (:numberOfRooms is null or rooms = :numberOfRooms) and (propertyAssignmentStatus = :propertyAssignmentStatus)";
         TypedQuery<PropertyUnit> query = entityManager.createQuery(queryString, PropertyUnit.class);
         query.setParameter("propertyNumberOrName", name);
         query.setParameter("numberOfRooms", rooms);

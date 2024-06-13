@@ -65,10 +65,10 @@ public class MeterReadingServiceImpl implements MeterReadingService {
             waterMeterData.setPricePerUnit(additionalExpenses.getCost());
             waterMeterData.setMeterReadingTaken(false);
             waterMeterData.setWaterMeterImage(waterMeterImage);
-            waterMeterData.setMonth(LocalDateTime.now().getMonth().toString().toUpperCase());
-            waterMeterData.setYear(String.valueOf(LocalDateTime.now().getYear()));
-//            waterMeterData.setMonth("MAY");
-//            waterMeterData.setYear("2024");
+//            waterMeterData.setMonth(LocalDateTime.now().getMonth().toString().toUpperCase());
+//            waterMeterData.setYear(String.valueOf(LocalDateTime.now().getYear()));
+            waterMeterData.setMonth("JUNE");
+            waterMeterData.setYear("2024");
             waterMeterImage.setWaterMeterData(waterMeterData);
             WaterMeterDataDTO waterMeterDataDTO;
             waterMeterDataDTO = waterMeterDataToWaterMeterDataDTO(meterReadingDao.addMeterWaterReading(waterMeterData), domain.getValue(), imagePath.getValue());

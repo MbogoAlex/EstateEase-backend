@@ -24,7 +24,7 @@ public class PropertyUnitServices {
         int roleId = 0;
 
         PropertyUnit propertyUnit = new PropertyUnit();
-        propertyUnit.setNumberOfRooms(propertyUnitDTO.getNumberOfRooms());
+        propertyUnit.setRooms(propertyUnitDTO.getRooms());
         propertyUnit.setPropertyDescription(propertyUnitDTO.getPropertyDescription());
         propertyUnit.setPropertyNumberOrName(propertyUnit.getPropertyNumberOrName());
         propertyUnit.setMonthlyRent(propertyUnitDTO.getMonthlyRent());

@@ -14,6 +14,8 @@ public class CaretakerAccountDTO {
     private int pManagerId;
     private Double salary;
 
+    public CaretakerAccountDTO() {}
+
     public CaretakerAccountDTO(String fullName, String nationalIdOrPassportNumber, String phoneNumber, String email, String password, int roleId, int pManagerId, Double salary) {
         this.fullName = fullName;
         this.nationalIdOrPassportNumber = nationalIdOrPassportNumber;

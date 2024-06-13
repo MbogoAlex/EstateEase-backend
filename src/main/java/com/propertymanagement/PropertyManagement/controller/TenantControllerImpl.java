@@ -1,6 +1,7 @@
 package com.propertymanagement.PropertyManagement.controller;
 
 import com.propertymanagement.PropertyManagement.dto.*;
+import com.propertymanagement.PropertyManagement.entity.RentPayment;
 import com.propertymanagement.PropertyManagement.entity.Tenant;
 import com.propertymanagement.PropertyManagement.service.TenantService;
 import net.sf.jasperreports.engine.JRException;
@@ -12,7 +13,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.time.LocalDateTime;
+import java.util.Map;
 
 import static java.util.Map.of;
 
@@ -57,7 +61,7 @@ public class TenantControllerImpl implements TenantController{
 
     @Override
     @PostMapping("/rentpayment/rentPaymentTblId={id}")
-    public ResponseEntity<Response> payRent(@RequestBody RentPaymentRequestDTO rentPaymentRequestDTO, @PathVariable("id") int rentPaymentTblId) {
+    public ResponseEntity<Response> payRent(@RequestBody RentPaymentRequestDTO rentPaymentRequestDTO, @PathVariable("id") int rentPaymentTblId) throws URISyntaxException, IOException, InterruptedException {
         return buildResponse("rentPayment", tenantService.payRent(rentPaymentRequestDTO, rentPaymentTblId), "Paid successfully", HttpStatus.OK);
     }
 
@@ -105,7 +109,7 @@ public class TenantControllerImpl implements TenantController{
             @RequestParam(value = "month", required = false) String month,
             @RequestParam(value = "year", required = false) Integer year,
             @RequestParam(value = "roomName", required = false) String roomName,
-            @RequestParam(value = "rooms", required = false) Integer rooms,
+            @RequestParam(value = "rooms", required = false) String rooms,
             @RequestParam(value = "tenantName", required = false) String tenantName,
             @RequestParam(value = "rentPaymentStatus", required = false) Boolean rentPaymentStatus,
             @RequestParam(value = "paidLate", required = false) Boolean paidLate,
@@ -120,7 +124,7 @@ public class TenantControllerImpl implements TenantController{
             @RequestParam(value = "month", required = false) String month,
             @RequestParam(value = "year", required = false) Integer year,
             @RequestParam(value = "roomName", required = false) String roomName,
-            @RequestParam(value = "rooms", required = false) Integer rooms,
+            @RequestParam(value = "rooms", required = false) String rooms,
             @RequestParam(value = "tenantName", required = false) String tenantName,
             @RequestParam(value = "rentPaymentStatus", required = false) Boolean rentPaymentStatus,
             @RequestParam(value = "paidLate", required = false) Boolean paidLate,
@@ -130,6 +134,23 @@ public class TenantControllerImpl implements TenantController{
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_PDF);
         return new ResponseEntity(reportStream.toByteArray(), httpHeaders, HttpStatus.OK);
+    }
+    @PostMapping("/handleCallback")
+    @Override
+    public ResponseEntity<?> handleCallback(@RequestBody Map<String, Object> mpesaResponse) {
+        try {
+            Object response = tenantService.handleCallback(mpesaResponse);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(e.getMessage());
+        }
+    }
+    @GetMapping("/payment/{id}")
+    @Override
+    public ResponseEntity<?> checkPaymentStatus(@PathVariable("id") int id) {
+        RentPaymentDetailsDTO rentPayment = tenantService.checkPaymentStatus(id);
+        return ResponseEntity.ok(rentPayment);
     }
 
     private ResponseEntity<Response> buildResponse(String desc, Object data, String message, HttpStatus status) {

@@ -40,8 +40,11 @@ public interface TenantDao {
     List<RentPayment> getRentPaymentRows(String month, String year);
 
     RentPayment getSingleRentPaymentRow(int rentPaymentTblId);
+    RentPayment getSingleRentPaymentRowByTransactionId(String transactionId);
 
     RentPayment updateRentPaymentRow(RentPayment rentPayment);
 
-    List<DetailedRentPaymentInfoDTO> getRentPaymentRowsByTenantId(Integer tenantId, String month, Integer year, String roomName, Integer rooms, String tenantName, Boolean rentPaymentStatus, Boolean paidLate, Boolean tenantActive);
+    List<DetailedRentPaymentInfoDTO> getRentPaymentRowsByTenantId(Integer tenantId, String month, Integer year, String roomName, String rooms, String tenantName, Boolean rentPaymentStatus, Boolean paidLate, Boolean tenantActive);
+
+
 }

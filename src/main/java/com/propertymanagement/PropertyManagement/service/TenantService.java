@@ -5,9 +5,13 @@ import com.propertymanagement.PropertyManagement.dto.tenantResponse.TenantRespon
 import com.propertymanagement.PropertyManagement.entity.RentPayment;
 import com.propertymanagement.PropertyManagement.entity.Tenant;
 import net.sf.jasperreports.engine.JRException;
+import org.springframework.http.ResponseEntity;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Map;
 
 public interface TenantService {
     // add new tenant
@@ -28,7 +32,7 @@ public interface TenantService {
 
     // update rent payment
 
-    RentPaymentDetailsDTO payRent(RentPaymentRequestDTO rentPaymentRequestDTO, int rentPaymentTblId);
+    RentPaymentDetailsDTO payRent(RentPaymentRequestDTO rentPaymentRequestDTO, int rentPaymentTblId) throws URISyntaxException, IOException, InterruptedException;
 
     // archive tenant
     TenantResponseDTO archiveTenant(int tenantId, int propertyId);
@@ -43,7 +47,10 @@ public interface TenantService {
 
     List<RentPaymentDetailsDTO> deActivateLatePaymentPenaltyForMultipleTenants(String month, String year);
 
-    List<DetailedRentPaymentInfoDTO> getRentPaymentRowsByTenantId(Integer tenantId, String month, Integer year, String roomName, Integer rooms, String tenantName, Boolean rentPaymentStatus, Boolean paidLate, Boolean tenantActive);
+    List<DetailedRentPaymentInfoDTO> getRentPaymentRowsByTenantId(Integer tenantId, String month, Integer year, String roomName, String rooms, String tenantName, Boolean rentPaymentStatus, Boolean paidLate, Boolean tenantActive);
 
-    ByteArrayOutputStream generateRentPaymentsReport(Integer tenantId, String month, Integer year, String roomName, Integer rooms, String tenantName, Boolean rentPaymentStatus, Boolean paidLate, Boolean tenantActive) throws JRException;
+    ByteArrayOutputStream generateRentPaymentsReport(Integer tenantId, String month, Integer year, String roomName, String rooms, String tenantName, Boolean rentPaymentStatus, Boolean paidLate, Boolean tenantActive) throws JRException;
+    ResponseEntity<?> handleCallback(Map<String, Object> mpesaResponse);
+
+    RentPaymentDetailsDTO checkPaymentStatus(int id);
 }

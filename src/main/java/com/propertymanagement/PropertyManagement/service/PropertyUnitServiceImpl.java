@@ -128,7 +128,7 @@ public class PropertyUnitServiceImpl implements PropertyUnitService{
     }
 
     @Override
-    public List<PropertyUnitResponseDTO> fetchFilteredUnits(String tenantName, Integer rooms, String roomName, Boolean occupied) {
+    public List<PropertyUnitResponseDTO> fetchFilteredUnits(String tenantName, String rooms, String roomName, Boolean occupied) {
         List<PropertyUnitResponseDTO> propertiesDto = new ArrayList<>();
         List<PropertyUnit> properties = propertyUnitDao.fetchFilteredUnits(
                 roomName,

@@ -27,7 +27,7 @@ public class DetailedRentPaymentInfoDTO {
     private String transactionId;
     private Year year;
     private String propertyNumberOrName;
-    private Integer numberOfRooms;
+    private String numberOfRooms;
     private Integer tenantId;
     private String email;
     private String fullName;
@@ -43,7 +43,7 @@ public class DetailedRentPaymentInfoDTO {
 
     private String imageFile;
 
-    public DetailedRentPaymentInfoDTO(int rentPaymentTblId, LocalDate dueDate, Month month, Double monthlyRent, Double paidAmount, LocalDateTime paidAt, Boolean paidLate, Boolean rentPaymentStatus, Boolean penaltyActive, Double penaltyPerDay, String transactionId, Year year, String propertyNumberOrName, Integer numberOfRooms, Integer tenantId, String email, String fullName, String nationalIdOrPassport, String phoneNumber, LocalDateTime tenantAddedAt, Boolean tenantActive) {
+    public DetailedRentPaymentInfoDTO(int rentPaymentTblId, LocalDate dueDate, Month month, Double monthlyRent, Double paidAmount, LocalDateTime paidAt, Boolean paidLate, Boolean rentPaymentStatus, Boolean penaltyActive, Double penaltyPerDay, String transactionId, Year year, String propertyNumberOrName, String numberOfRooms, Integer tenantId, String email, String fullName, String nationalIdOrPassport, String phoneNumber, LocalDateTime tenantAddedAt, Boolean tenantActive) {
         this.rentPaymentTblId = rentPaymentTblId;
         this.dueDate = dueDate;
         this.month = month;
@@ -67,7 +67,7 @@ public class DetailedRentPaymentInfoDTO {
         this.tenantActive = tenantActive;
     }
 
-    public DetailedRentPaymentInfoDTO(int rentPaymentTblId, LocalDate dueDate, Month month, Double monthlyRent, Double paidAmount, LocalDateTime paidAt, Boolean paidLate, Boolean rentPaymentStatus, Boolean penaltyActive, Double penaltyPerDay, String transactionId, Year year, String propertyNumberOrName, Integer numberOfRooms, Integer tenantId, String email, String fullName, String nationalIdOrPassport, String phoneNumber, LocalDateTime tenantAddedAt, Boolean tenantActive, Double waterUnits, Double pricePerUnit, LocalDateTime meterReadingDate, String imageFile) {
+    public DetailedRentPaymentInfoDTO(int rentPaymentTblId, LocalDate dueDate, Month month, Double monthlyRent, Double paidAmount, LocalDateTime paidAt, Boolean paidLate, Boolean rentPaymentStatus, Boolean penaltyActive, Double penaltyPerDay, String transactionId, Year year, String propertyNumberOrName, String numberOfRooms, Integer tenantId, String email, String fullName, String nationalIdOrPassport, String phoneNumber, LocalDateTime tenantAddedAt, Boolean tenantActive, Double waterUnits, Double pricePerUnit, LocalDateTime meterReadingDate, String imageFile) {
         this.rentPaymentTblId = rentPaymentTblId;
         this.dueDate = dueDate;
         this.month = month;
@@ -112,7 +112,7 @@ public class DetailedRentPaymentInfoDTO {
                 ", transactionId='" + transactionId + '\'' +
                 ", year=" + year +
                 ", propertyNumberOrName='" + propertyNumberOrName + '\'' +
-                ", numberOfRooms=" + numberOfRooms +
+                ", numberOfRooms='" + numberOfRooms + '\'' +
                 ", tenantId=" + tenantId +
                 ", email='" + email + '\'' +
                 ", fullName='" + fullName + '\'' +

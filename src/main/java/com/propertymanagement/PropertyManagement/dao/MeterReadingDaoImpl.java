@@ -26,6 +26,7 @@ public class MeterReadingDaoImpl implements MeterReadingDao{
     @Override
     public WaterMeterData getMeterWaterReadingById(int id) {
         TypedQuery<WaterMeterData> query = entityManager.createQuery("from WaterMeterData where id = :id", WaterMeterData.class);
+        query.setParameter("id", id);
         return query.getSingleResult();
     }
 

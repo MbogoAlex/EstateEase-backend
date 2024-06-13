@@ -100,13 +100,22 @@ public class TenantDaoImpl implements TenantDao{
     }
 
     @Override
+    public RentPayment getSingleRentPaymentRowByTransactionId(String transactionId) {
+        TypedQuery<RentPayment> query = entityManager.createQuery("from RentPayment where transactionId = :transactionId", RentPayment.class);
+        query.setParameter("transactionId", transactionId);
+        return query.getSingleResult();
+    }
+
+    @Override
     public RentPayment updateRentPaymentRow(RentPayment rentPayment) {
         entityManager.merge(rentPayment);
         return rentPayment;
     }
 
     @Override
-    public List<DetailedRentPaymentInfoDTO> getRentPaymentRowsByTenantId(Integer tenantId, String month, Integer year, String roomName, Integer rooms, String tenantName, Boolean rentPaymentStatus, Boolean paidLate, Boolean tenantActive) {
+    public List<DetailedRentPaymentInfoDTO> getRentPaymentRowsByTenantId(Integer tenantId, String month, Integer year, String roomName, String rooms, String tenantName, Boolean rentPaymentStatus, Boolean paidLate, Boolean tenantActive) {
+
+        System.out.println("MONTH: "+month+" YEAR: "+year+" ROOMNAME: "+roomName+" ROOMS: "+rooms+" TENANTNAME: "+tenantName+" TENANTID: "+tenantId+" RENTPAYMENTSTATUS: "+rentPaymentStatus+" PAIDLATE: "+paidLate+" TENANTACTIVE: "+tenantActive);
 
         String stringQuery = "select new DetailedRentPaymentInfoDTO(" +
                 "rp.rentPaymentTblId, " +
@@ -122,7 +131,7 @@ public class TenantDaoImpl implements TenantDao{
                 "rp.transactionId, " +
                 "rp.year, " +
                 "pu.propertyNumberOrName, " +
-                "pu.numberOfRooms, " +
+                "pu.rooms, " +
                 "t.tenantId, " +
                 "t.email, " +
                 "t.fullName, " +
@@ -143,7 +152,7 @@ public class TenantDaoImpl implements TenantDao{
                 "and (:month is null or :month = '' or MONTHNAME(rp.dueDate) = :month)" +
                 "and (:year is null or YEAR(rp.dueDate) = :year)" +
                 "and (:tenantName is null or t.fullName like concat('%', :tenantName, '%')) " +
-                "and (:numberOfRooms is null or pu.numberOfRooms = :numberOfRooms) " +
+                "and (:numberOfRooms is null or pu.rooms like concat('%', :numberOfRooms, '%')) " +
                 "and (:propertyNumberOrName is null or pu.propertyNumberOrName like concat('%', :propertyNumberOrName, '%')) " +
                 "and (:rentPaymentStatus is null or rp.paymentStatus = :rentPaymentStatus)" +
                 "and (:paidLate is null or rp.paidLate = :paidLate)" +

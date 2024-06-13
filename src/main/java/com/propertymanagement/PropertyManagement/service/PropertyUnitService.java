@@ -29,7 +29,7 @@ public interface PropertyUnitService {
 
     // ge all occupied units
 
-    List<PropertyUnitResponseDTO> fetchFilteredUnits(String tenantName, Integer rooms, String roomName, Boolean occupied);
+    List<PropertyUnitResponseDTO> fetchFilteredUnits(String tenantName, String rooms, String roomName, Boolean occupied);
 
     List<PropertyUnitResponseDTO> fetchAllUnoccupiedUnits(int rooms, String roomName);
 

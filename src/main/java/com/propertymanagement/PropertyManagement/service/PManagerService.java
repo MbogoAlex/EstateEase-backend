@@ -28,8 +28,8 @@ public interface PManagerService {
 
     List<RentPaymentDetailsDTO> getRentPaymentDetailedInfo(String month, String year, String rooms, String roomName, String tenantName);
 
-    List<DetailedRentPaymentInfoDTO> getDetailedRentPayments(String month, String year, String roomName, Integer rooms, String tenantName, Integer tenantId, Boolean rentPaymentStatus, Boolean paidLate, Boolean tenantActive);
+    List<DetailedRentPaymentInfoDTO> getDetailedRentPayments(String month, String year, String roomName, String rooms, String tenantName, Integer tenantId, Boolean rentPaymentStatus, Boolean paidLate, Boolean tenantActive);
 
-    ByteArrayOutputStream generateGeneralRentPaymentsReport(String month, String year, String roomName, Integer rooms, String tenantName, Integer tenantId, Boolean rentPaymentStatus, Boolean paidLate, Boolean tenantActive) throws JRException;
+    ByteArrayOutputStream generateGeneralRentPaymentsReport(String month, String year, String roomName, String rooms, String tenantName, Integer tenantId, Boolean rentPaymentStatus, Boolean paidLate, Boolean tenantActive) throws JRException;
 
 }

@@ -142,12 +142,14 @@ public class PManagerDaoImpl implements PManagerDao {
             String month,
             String year,
             String propertyNumberOrName,
-            Integer numberOfRooms,
+            String numberOfRooms,
             String tenantName,
             Integer tenantId,
             Boolean rentPaymentStatus,
             Boolean paidLate,
             Boolean tenantActive) {
+
+        System.out.println("MONTH: "+month+" YEAR: "+year+" ROOMNAME: "+propertyNumberOrName+" ROOMS: "+numberOfRooms+" TENANTNAME: "+tenantName+" TENANTID: "+tenantId+" RENTPAYMENTSTATUS: "+rentPaymentStatus+" PAIDLATE: "+paidLate+" TENANTACTIVE: "+tenantActive);
 
         Map<String, String> monthMap = new HashMap<>();
         monthMap.put("january", "December");
@@ -180,7 +182,7 @@ public class PManagerDaoImpl implements PManagerDao {
                 "rp.transactionId, " +
                 "rp.year, " +
                 "pu.propertyNumberOrName, " +
-                "pu.numberOfRooms, " +
+                "pu.rooms, " +
                 "t.tenantId, " +
                 "t.email, " +
                 "t.fullName, " +
@@ -201,12 +203,12 @@ public class PManagerDaoImpl implements PManagerDao {
                 "and YEAR(rp.dueDate) = :formattedYear " +
                 "and (:tenantName is null or t.fullName like concat('%', :tenantName, '%')) " +
                 "and (:tenantId is null or t.tenantId = :tenantId) " +
-                "and (:numberOfRooms is null or pu.numberOfRooms = :numberOfRooms) " +
+                "and (:numberOfRooms is null or pu.rooms like concat('%', :numberOfRooms, '%')) " +
                 "and (:propertyNumberOrName is null or pu.propertyNumberOrName like concat('%', :propertyNumberOrName, '%')) " +
                 "and (:rentPaymentStatus is null or rp.paymentStatus = :rentPaymentStatus) " +
                 "and (:paidLate is null or rp.paidLate = :paidLate) " +
                 "and (:tenantActive is null or t.tenantActive = :tenantActive) " +
-                "group by rp.rentPaymentTblId, rp.dueDate, rp.month, rp.monthlyRent, rp.paidAmount, rp.paidAt, rp.paidLate, rp.paymentStatus, rp.penaltyActive, rp.penaltyPerDay, rp.transactionId, rp.year, pu.propertyNumberOrName, pu.numberOfRooms, t.tenantId, t.email, t.fullName, t.nationalIdOrPassportNumber, t.phoneNumber, t.tenantAddedAt, t.tenantActive";
+                "group by rp.rentPaymentTblId, rp.dueDate, rp.month, rp.monthlyRent, rp.paidAmount, rp.paidAt, rp.paidLate, rp.paymentStatus, rp.penaltyActive, rp.penaltyPerDay, rp.transactionId, rp.year, pu.propertyNumberOrName, pu.rooms, t.tenantId, t.email, t.fullName, t.nationalIdOrPassportNumber, t.phoneNumber, t.tenantAddedAt, t.tenantActive";
 
         TypedQuery<DetailedRentPaymentInfoDTO> query = entityManager.createQuery(stringQuery, DetailedRentPaymentInfoDTO.class);
         query.setParameter("month", month);
@@ -221,7 +223,10 @@ public class PManagerDaoImpl implements PManagerDao {
         query.setParameter("paidLate", paidLate);
         query.setParameter("tenantActive", tenantActive);
 
-        return query.getResultList();
+        List<DetailedRentPaymentInfoDTO> result = query.getResultList();
+        System.out.println("SIZE: "+result.size());
+
+        return result;
     }
 
 

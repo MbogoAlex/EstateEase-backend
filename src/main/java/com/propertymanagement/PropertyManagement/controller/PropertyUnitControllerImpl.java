@@ -59,7 +59,7 @@ public class PropertyUnitControllerImpl implements PropertyUnitController {
     @Override
     public ResponseEntity<Response> fetchFilteredUnits(
             @RequestParam(value = "tenantName", required = false) String tenantName,
-            @RequestParam(value = "rooms", required = false) Integer rooms,
+            @RequestParam(value = "rooms", required = false) String rooms,
             @RequestParam(value = "roomName", required = false) String roomName,
             @RequestParam(value = "occupied") Boolean occupied
     ) {

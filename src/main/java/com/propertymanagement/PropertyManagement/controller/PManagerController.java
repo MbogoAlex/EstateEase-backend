@@ -30,7 +30,7 @@ public interface PManagerController {
 
     ResponseEntity<Response> getRentPaymentDetailedInfo(String month, String year, String rooms, String roomName, String tenantName);
 
-    ResponseEntity<Response> getDetailedRentPayments(String month, String year, String roomName, Integer rooms, String tenantName, Integer tenantId, Boolean rentPaymentStatus, Boolean paidLate, Boolean tenantActive);
+    ResponseEntity<Response> getDetailedRentPayments(String month, String year, String roomName, String rooms, String tenantName, Integer tenantId, Boolean rentPaymentStatus, Boolean paidLate, Boolean tenantActive);
 
-    ResponseEntity<Response> generateGeneralRentPaymentsReport(String month, String year, String roomName, Integer rooms, String tenantName, Integer tenantId, Boolean rentPaymentStatus, Boolean paidLate, Boolean tenantActive) throws JRException;
+    ResponseEntity<Response> generateGeneralRentPaymentsReport(String month, String year, String roomName, String rooms, String tenantName, Integer tenantId, Boolean rentPaymentStatus, Boolean paidLate, Boolean tenantActive) throws JRException;
 }
